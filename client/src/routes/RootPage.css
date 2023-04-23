@@ -1,0 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap');
+
+.rootPage {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+}
+
+.rootPage h1 {
+    color: white;
+    font-family: 'Montserrat', sans-serif;;
+}
+
+.walletConnection {
+    width: 100%;
+    height: auto;
+    margin-top: 20px;
+    /* margin-bottom: 20px; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.walletConnection h3 {
+    color: white;
+    font-family: 'Montserrat', sans-serif;;
+}
+
+.idSubmission {
+    width: 100%;
+    height: auto;
+    margin-top: 20px;
+    margin-bottom: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.idSubmission h3 {
+    color: white;
+    font-family: 'Montserrat', sans-serif;;
+}
