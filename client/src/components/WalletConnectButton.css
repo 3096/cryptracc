@@ -1,12 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap');
 
-.rootPage h1 {
-    color: white;
-    font-family: 'Montserrat', sans-serif;
-    margin-top: 5%;
-}
-
-.walletConnection {
+/* .walletConnection {
     width: 100%;
     height: auto;
     margin-top: 20px;
@@ -15,9 +9,10 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
-}
+} */
 
 .walletConnection h3 {
+    font-size: 1.3em;
     color: white;
     font-family: 'Montserrat', sans-serif;
 }
