@@ -11,7 +11,6 @@ export default function DashboardPage() {
   return(
     <div>
       <img className="avatar" />
-      <Navigation/>
       <AboutPage/>
       <App/>
       <Profile/>
@@ -98,7 +97,9 @@ function MyButton({ count, onClick }) {
   );
 
 }
+
 function App() {
+  const [users, setUsers] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [id1, setid1] = useState("");
   const [id2, setid2] = useState("");
@@ -106,19 +107,39 @@ function App() {
   const [sign2, setsign2] = useState("");
   const [file, setFile] = useState(null);
 
-
   function handleSubmit(e) {
     e.preventDefault();
-    // do something with the form data
-    console.log(id1, id2, sign1, sign2);
-    // close the form
+    const formData = new FormData(e.target);
+    const user = {
+      id1: id1,
+      id2: id2,
+      sign1: sign1,
+      sign2: sign2,
+      file: file,
+    };
+    
+    //For debugg purpouse
+    console.log(users);
+
+    // add the new user object to the users array
+    setUsers(prevState => [...prevState, user])
+
+    // reset the form fields and close the form
+    setid1("");
+    setid2("");
+    setsign1("");
+    setsign2("");
+    setFile(null);
+    e.target.reset();
     setShowForm(false);
   }
+  
   function handleFileChange(e) {
     setFile(e.target.files[0]);
   }
 
   return (
+  <>
     <div>
       <button onClick={() => setShowForm(true)}>Add Contract +</button>
       {showForm && (
@@ -154,7 +175,20 @@ function App() {
           </form>
         </div>
       )}
+    {users.map((user, index) => (
+        <div key={index} className="user-box">
+          <p>ID1: {user.id1}</p>
+          <p>ID2: {user.id2}</p>
+          <p>Signature_User1: {user.sign1}</p>
+          <p>Signature_User2: {user.sign2}</p>
+          <p>File: {user.file.name}</p>
+        </div>
+      ))}
+
     </div>
+  </>
   );
 }
+
+
 
