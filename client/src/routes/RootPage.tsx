@@ -23,3 +23,38 @@ export default function RootPage() {
     </div>
   );
 }
+// import Button from "@mui/material/Button";
+// import Card from "@mui/material/Card";
+// import CardContent from "@mui/material/CardContent";
+// import Typography from "@mui/material/Typography";
+// import { useAccount, useConnect, useDisconnect } from "wagmi";
+// import { InjectedConnector } from "wagmi/connectors/injected";
+
+// export default function RootPage() {
+//   const { address, isConnected } = useAccount();
+//   const { connect } = useConnect({
+//     connector: new InjectedConnector(),
+//   });
+//   const { disconnect } = useDisconnect();
+
+//   return (
+//     <>
+//       {isConnected ? (
+//         <div>
+//           <Card>
+//             <CardContent>
+//               <Typography my={1}>Connected to {address}</Typography>
+//               <Button variant="contained" onClick={() => disconnect()}>
+//                 Disconnect
+//               </Button>
+//             </CardContent>
+//           </Card>
+//         </div>
+//       ) : (
+//         <Button variant="contained" onClick={() => connect()}>
+//           Connect Wallet
+//         </Button>
+//       )}
+//     </>
+//   );
+// }
