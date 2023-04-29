@@ -31,14 +31,60 @@ describe("Cryptracc", function () {
         "0x0000000000000000000000000000000000000000000000000000000000000000"
       );
     });
+
+    it("Should not be able to submit id if already submitted", async function () {
+      const { cryptracc } = await loadFixture(deployFixture);
+      const fakeId = "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+      await cryptracc.submitId(fakeId);
+      await expect(cryptracc.submitId(fakeId)).to.be.revertedWith("identity hash already exists");
+    });
   });
 
   describe("Contract", function () {
+    describe("Create", function () {
+      it("Should be able to create contract", async function () {
+        const { cryptracc, owner } = await loadFixture(deployFixture);
+        const fakeId = "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+        await cryptracc.submitId(fakeId);
+        const fakeContract = "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdee";
+        await cryptracc.createContract(fakeContract, [owner.address]);
+        expect(await cryptracc.contractSignStatus(fakeContract, owner.address)).to.equal(1);
+        expect(await cryptracc.contractSigners(fakeContract, 0)).to.eql(owner.address);
+      });
+
+      it("Should not be able to create contract if no identity", async function () {
+        const { cryptracc, owner } = await loadFixture(deployFixture);
+        const fakeContract = "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdee";
+        await expect(cryptracc.createContract(fakeContract, [owner.address])).to.be.revertedWith(
+          "an address does not have an identity hash"
+        );
+      });
+
+      it("Should not be able to create contract if contract already exists", async function () {
+        const { cryptracc, owner } = await loadFixture(deployFixture);
+        const fakeId = "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+        await cryptracc.submitId(fakeId);
+        const fakeContract = "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdee";
+        await cryptracc.createContract(fakeContract, [owner.address]);
+        await expect(cryptracc.createContract(fakeContract, [owner.address])).to.be.revertedWith(
+          "contract already exists"
+        );
+      });
+    });
+
     describe("Signing", function () {
+      it("Should not be able to sign if no identity", async function () {
+        const { cryptracc } = await loadFixture(deployFixture);
+        const fakeContract = "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+        await expect(cryptracc.signContract(fakeContract)).to.be.revertedWith("no identity hash");
+      });
+
       it("Should not be able to sign if contract does not exist", async function () {
         const { cryptracc } = await loadFixture(deployFixture);
-        const fakeId = "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
-        await expect(cryptracc.signContract(fakeId)).to.be.revertedWith("cannot sign contract");
+        const fakeId = "0x6923456789abcdef0123456789abcdef0123456789abcdef0123456789abcdff";
+        await cryptracc.submitId(fakeId);
+        const fakeContract = "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+        await expect(cryptracc.signContract(fakeContract)).to.be.revertedWith("cannot sign contract");
       });
     });
   });

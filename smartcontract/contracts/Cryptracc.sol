@@ -29,6 +29,14 @@ contract Cryptracc {
         bytes32 contractHash,
         address[] memory signerAddresses
     ) public {
+        require(
+            contractSigners[contractHash].length == 0,
+            "contract already exists"
+        );
+        require(
+            signerAddresses.length > 0,
+            "contract must have at least one signer"
+        );
         for (uint i = 0; i < signerAddresses.length; i++) {
             require(
                 identityHashes[signerAddresses[i]] != bytes32(0),
