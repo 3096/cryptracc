@@ -1,10 +1,12 @@
-import { sha256 } from "crypto-hash";
+import { Dispatch, useState } from "react";
 import "./FileHashing.css";
-import { Dispatch } from "react";
+import { Button } from "@mui/material";
+import { sha256 } from "crypto-hash";
 
-type Props = { setOutput: Dispatch<React.SetStateAction<string>> };
+type Props = { prompt: string; setOutput: Dispatch<React.SetStateAction<`0x${string}`>> };
 
-export default function FileHashing({ setOutput }: Props) {
+export default function IdUploadButton({ prompt, setOutput }: Props) {
+  const [filename, setFilename] = useState<string>();
   // For handling file input
   const handleFileInput = (e: any) => {
     // Initializing the file reader
@@ -17,25 +19,33 @@ export default function FileHashing({ setOutput }: Props) {
       result = await sha256(fr.result as string);
 
       // Setting the hashed text as the output
-      setOutput("0x" + result);
+      setOutput(`0x${result.padStart(64, "0")}`);
+      setFilename(e.target.files[0].name);
     };
 
     // Reading the file.
     fr.readAsArrayBuffer(e.target.files[0]);
   };
-
   return (
-    <div className="hashing-container">
-      <div className="hashing-content">
-        <div className="hashing-form">
-          <form>
-            <div className="form-group">
-              <label htmlFor="file-input">File Input</label>
-              <input type="file" className="form-control" id="file-input" onChange={handleFileInput} />
-            </div>
-          </form>
-        </div>
-      </div>
+    <div className="idSubmission">
+      <h3>{prompt}</h3>
+
+      <Button
+        variant="contained"
+        component="label"
+        sx={{
+          height: 50,
+          width: 150,
+          bgcolor: `#C8C8C8`,
+          color: `#000000`,
+          textTransform: "none",
+          borderRadius: 3,
+        }}
+      >
+        Choose File
+        <input hidden accept="image/*" multiple type="file" onChange={handleFileInput} />
+      </Button>
+      <h4>{filename ?? "No file chosen"}</h4>
     </div>
   );
 }
