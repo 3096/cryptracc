@@ -5,14 +5,17 @@ import "./RootPage.css";
 import WalletConnectButton from "../components/WalletConnectButton";
 import { useAccount } from "wagmi";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 export default function RootPage() {
   const { isConnected } = useAccount();
   const navigate = useNavigate();
 
-  if (isConnected) {
-    navigate("/dashboard");
-  }
+  useEffect(() => {
+    if (isConnected) {
+      navigate("/dashboard");
+    }
+  }, [isConnected, navigate]);
 
   return (
     <div className="rootPage">

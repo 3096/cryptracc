@@ -2,11 +2,21 @@ import "./SetupPage.css";
 import WalletConnectButton from "../components/WalletConnectButton";
 import IdUploadButton from "../components/FileHashing";
 import { Button, Alert } from "@mui/material";
-import { useIdentitySetup } from "../hooks/cryptracc";
+import { useIdentitySetup, useIdentitySetupCheck } from "../hooks/cryptracc";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function SetupPage() {
+  useIdentitySetupCheck(false);
   const { data, isLoading, isSuccess, write, setIdentityHash } = useIdentitySetup();
-  console.log(data, isLoading, isSuccess, write);
+  const nav = useNavigate();
+
+  useEffect(() => {
+    if (isSuccess) {
+      nav("/dashboard");
+    }
+  }, [isSuccess, nav]);
+
   return (
     <div className="setupPage">
       <div className="headerRow">
