@@ -2,9 +2,6 @@ import React from 'react';
 import {useState} from 'react' ;
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-
-
 
 
 
@@ -40,7 +37,6 @@ Information about the user
 function Profile(){
   return(
     <>
-      <h1>CryptAcc</h1>
       <p>Welcome <b>{user.name} </b> to CryptAcc's DashBoard</p>
       <img
         className="avatar"
@@ -143,22 +139,39 @@ function App() {
       </div>
     )}
     <div>
-      <h3>Contracts Signed</h3>
-      {users.map((user, index) => (
-        <Box key={index} sx={{ backgroundColor: "#eee", padding: 5 }}>
-          <Typography variant="h7" display="inline">Contract Name: </Typography>
-          <Typography variant="h7" display="inline">{user.name}</Typography>
-          <br />
-          <Typography variant="h7" display="inline">user1 HashId: </Typography>
-          <Typography variant="h7" display="inline">{user.id1}</Typography>
-          <br />
-          <Typography variant="h7" display="inline">user2 HashId: </Typography>
-          <Typography variant="h7" display="inline">{user.id2}</Typography>
-          <br />
-        </Box>
-      ))}
+      <div style={{ marginRight: '700px' }}>
+        <h3>UnAuthorized Contracts</h3>
+        {users.map((user, index) => (
+          <Box key={index} sx={{ backgroundColor: "#616161", padding: 1, width: 400 }}>
+            <Typography variant="h7" display="inline">Contract Name: </Typography>
+            <Typography variant="h7" display="inline">{user.name}</Typography>
+            <br />
+            <Typography variant="h7" display="inline">user1 HashId: </Typography>
+            <Typography variant="h7" display="inline">{user.id1}</Typography>
+            <br />
+            <Typography variant="h7" display="inline">user2 HashId: </Typography>
+            <Typography variant="h7" display="inline">{user.id2}</Typography>
+            <br />
+          </Box>
+        ))}
+      </div>
+      <div style={{ marginLeft: '700px' }}>
+        <h3>Authorized Contract</h3>
+        {users.map((user, index) => (
+          <Box key={index} sx={{ backgroundColor: "#616161", padding: 1, width: 400 }}>
+            <Typography variant="h7" display="inline">Contract Name: </Typography>
+            <Typography variant="h7" display="inline">{user.name}</Typography>
+            <br />
+            <Typography variant="h7" display="inline">user1 HashId: </Typography>
+            <Typography variant="h7" display="inline">{user.id1}</Typography>
+            <br />
+            <Typography variant="h7" display="inline">user2 HashId: </Typography>
+            <Typography variant="h7" display="inline">{user.id2}</Typography>
+            <br />
+          </Box>
+        ))}
+      </div>
     </div>
-    
   </div>
   );
 }
