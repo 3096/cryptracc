@@ -7,6 +7,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { Grid } from '@mui/material';
+import FileHash from '../components/FileHashing';
 
 export default function LookupPage() {
   // Handle submit
@@ -25,7 +26,7 @@ export default function LookupPage() {
       justifyContent="center"
       alignItems="center"
     >
-        <Box sx={{ backgroundColor: 'silver', minHeight: '100vh' }}>
+        <Box sx={{ backgroundColor: 'light', minHeight: '100vh' }}>
           <Container component="main">
             <Box
               sx={{
