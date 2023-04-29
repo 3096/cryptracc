@@ -18,25 +18,30 @@ contract Cryptracc {
     constructor() {}
 
     function submitId(bytes32 identityHash) public {
+        require(
+            identityHashes[msg.sender] == bytes32(0),
+            "identity hash already exists"
+        );
         identityHashes[msg.sender] = identityHash;
     }
 
     function createContract(
         bytes32 contractHash,
-        address[] memory addresses
+        address[] memory signerAddresses
     ) public {
-        for (uint i = 0; i < addresses.length; i++) {
+        for (uint i = 0; i < signerAddresses.length; i++) {
             require(
-                identityHashes[addresses[i]] != bytes32(0),
+                identityHashes[signerAddresses[i]] != bytes32(0),
                 "an address does not have an identity hash"
             );
-            contractSignStatus[contractHash][addresses[i]] = SignStatus
+            contractSignStatus[contractHash][signerAddresses[i]] = SignStatus
                 .NotSigned;
-            contractSigners[contractHash].push(addresses[i]);
+            contractSigners[contractHash].push(signerAddresses[i]);
         }
     }
 
     function signContract(bytes32 contractHash) public {
+        require(identityHashes[msg.sender] != bytes32(0), "no identity hash");
         require(
             contractSignStatus[contractHash][msg.sender] ==
                 SignStatus.NotSigned,
