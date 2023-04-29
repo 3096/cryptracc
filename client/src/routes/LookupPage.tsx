@@ -42,7 +42,7 @@ export default function LookupPage() {
               </Typography>
               <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
                 <TextField
-                  style={{ backgroundColor: "#ffffff" }}
+                  style={{ color: "#ffffff" }}
                   margin="normal"
                   required
                   fullWidth
