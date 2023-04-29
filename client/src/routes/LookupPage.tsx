@@ -37,7 +37,7 @@ export default function LookupPage() {
               }}
             >
               <Avatar sx={{ m: 1, bgcolor: 'white' }} />
-            <Typography component="h1" variant="h5" color='black'>
+            <Typography component="h1" variant="h5" color='white'>
                 Lookup Contract
               </Typography>
               <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
