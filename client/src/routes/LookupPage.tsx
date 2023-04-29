@@ -6,19 +6,7 @@ import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Grid } from '@mui/material';
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#a48a6a',
-    },
-    secondary: {
-      main: '#bfa27e',
-    },
-  },
-});
 
 export default function LookupPage() {
   // Handle submit
@@ -37,9 +25,7 @@ export default function LookupPage() {
       justifyContent="center"
       alignItems="center"
     >
-      <ThemeProvider theme={theme}>
-        <Box sx={{ backgroundColor: '#f5deb3', minHeight: '100vh' }}>
-          <CssBaseline />
+        <Box sx={{ backgroundColor: 'silver', minHeight: '100vh' }}>
           <Container component="main">
             <Box
               sx={{
@@ -49,8 +35,8 @@ export default function LookupPage() {
                 alignItems: 'center',
               }}
             >
-              <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }} />
-              <Typography component="h1" variant="h5">
+              <Avatar sx={{ m: 1, bgcolor: 'white' }} />
+            <Typography component="h1" variant="h5" color='black'>
                 Lookup Contract
               </Typography>
               <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
@@ -77,7 +63,6 @@ export default function LookupPage() {
             </Box>
           </Container>
         </Box>
-      </ThemeProvider>
     </Grid>
   )
 };
