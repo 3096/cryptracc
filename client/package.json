@@ -13,6 +13,7 @@
     "@emotion/styled": "^11.10.8",
     "@mui/icons-material": "^5.11.16",
     "@mui/material": "^5.12.2",
+    "crypto-hash": "^2.0.1",
     "ethers": "^5.7.2",
     "localforage": "^1.10.0",
     "match-sorter": "^6.3.1",
