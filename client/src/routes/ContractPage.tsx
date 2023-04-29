@@ -8,6 +8,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Chip from '@mui/material/Chip';
+import Grid from '@mui/material/Grid';
 
 const contractId = "contractId"; // get contractId here
 
@@ -33,14 +34,14 @@ export default function ContractPage() {
     setSignature(event.target.value);
   };
 
-  const onClick = () => { // needs validation
+  const onClick = () => { // needs validation to check if they own their Id
     const signer = signers.find(({ id }) => id == signature)
     if (signer != null) {
       signer.status = true
       setRefresh(!refresh); // what
     }
     
-    // check contract status
+    // check contract completedness status
     var complete = true
     signers.forEach(function(signer) {
       if (signer.status == false) {
@@ -52,9 +53,13 @@ export default function ContractPage() {
 
   return (
     <div className="contractPage">
-      <Button className="backButton" href="/lookup">
-        Back
-      </Button>
+      <Grid container justifyContent="flex-start">
+        <Grid item>
+          <Button className="backButton" href="/lookup">
+            &lt; Back
+          </Button>
+        </Grid>
+      </Grid>
 
       <h1>{contractId}</h1>
 
@@ -88,7 +93,6 @@ export default function ContractPage() {
               <ListItem>
                 <ListItemText
                   primary={signer.id}
-                  //secondary={signer.status ? "SIGNED" : "NOT SIGNED"}
                 />
                 <Chip color={signer.status ? "success" : "warning"} label={signer.status ? <strong>SIGNED</strong> : <strong>NOT SIGNED</strong>}/>
               </ListItem>
