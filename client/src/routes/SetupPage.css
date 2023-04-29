@@ -1,0 +1,36 @@
+@import url("https://fonts.googleapis.com/css2?family=Oleo+Script&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap');
+
+.headerRow {
+    width: 100%;
+    height: auto;
+    /* margin-top: 20px;
+    margin-bottom: 60px; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+}
+
+.headerRow h1 {
+    margin-top: 5%;
+    color: white;
+    font-family: 'Montserrat', sans-serif;
+    margin-right: 12px;
+}
+
+.headerRow .cryptracc {
+    color: white;
+    font-family: "Oleo Script", cursive;
+}
+
+.warning {
+    width: 100%;
+    height: auto;
+    /* margin-top: 20px;
+    margin-bottom: 60px; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}

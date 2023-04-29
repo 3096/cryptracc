@@ -1,0 +1,22 @@
+@import url("https://fonts.googleapis.com/css2?family=Oleo+Script&display=swap");
+
+.navbar {
+    width: 100%;
+    height: 80px;
+    display: flex;
+    flex-direction: row;
+}
+
+.navbar .leftSide {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding-left: 100px;
+}
+
+.navbar a {
+    color: white;
+    font-family: "Oleo Script", cursive;
+    color: inherit;
+    text-decoration: none;
+}

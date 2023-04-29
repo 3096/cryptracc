@@ -1,25 +1,19 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
-import RootPage from "./routes/RootPage";
-import CreatePage from "./routes/CreatePage";
-import DashboardPage from "./routes/DashboardPage";
-import SetupPage from "./routes/SetupPage";
-import LookupPage from "./routes/LookupPage";
-import ContractPage from "./routes/ContractPage";
+import App from "./App";
+import { ThemeProvider, createTheme } from "@mui/material";
 
-const router = createBrowserRouter([
-  { path: "/", element: <RootPage /> },
-  { path: "/dashboard", element: <DashboardPage /> },
-  { path: "/create", element: <CreatePage /> },
-  { path: "/setup", element: <SetupPage /> },
-  { path: "/lookup", element: <LookupPage /> },
-  { path: "/contract/:contractId", element: <ContractPage /> },
-]);
+const theme = createTheme({
+  palette: {
+    mode: "dark",
+  },
+});
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <ThemeProvider theme={theme}>
+      <App />
+    </ThemeProvider>
   </React.StrictMode>
 );

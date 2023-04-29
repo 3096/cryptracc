@@ -1,0 +1,18 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap');
+
+/* .walletConnection {
+    width: 100%;
+    height: auto;
+    margin-top: 20px;
+    margin-bottom: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+} */
+
+.walletConnection h3 {
+    font-size: 1.3em;
+    color: white;
+    font-family: 'Montserrat', sans-serif;
+}

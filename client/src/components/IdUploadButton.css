@@ -1,0 +1,17 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap');
+
+.idSubmission {
+    width: 100%;
+    height: auto;
+    margin-top: 18px;
+    margin-bottom: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.idSubmission h3 {
+    color: white;
+    font-family: 'Montserrat', sans-serif;
+}
