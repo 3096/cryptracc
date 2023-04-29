@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import "./ContractPage.css";
 import { styled } from '@mui/material/styles';
 import List from '@mui/material/List';
@@ -9,6 +9,7 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Chip from '@mui/material/Chip';
 import Grid from '@mui/material/Grid';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
 const contractId = "contractId"; // get contractId here
 
@@ -56,7 +57,8 @@ export default function ContractPage() {
       <Grid container justifyContent="flex-start">
         <Grid item>
           <Button className="backButton" href="/lookup">
-            &lt; Back
+            <ArrowBackIosNewIcon />
+            <b>BACK</b>
           </Button>
         </Grid>
       </Grid>
