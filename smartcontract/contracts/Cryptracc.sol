@@ -14,8 +14,7 @@ contract Cryptracc {
     mapping(bytes32 => mapping(address => SignStatus))
         public contractSignStatus;
     mapping(bytes32 => address[]) public contractSigners;
-
-    constructor() {}
+    mapping(bytes32 => uint) public contractSignerCount;
 
     function submitId(bytes32 identityHash) public {
         require(
@@ -30,7 +29,7 @@ contract Cryptracc {
         address[] memory signerAddresses
     ) public {
         require(
-            contractSigners[contractHash].length == 0,
+            contractSignerCount[contractHash] == 0,
             "contract already exists"
         );
         require(
@@ -42,6 +41,9 @@ contract Cryptracc {
                 identityHashes[signerAddresses[i]] != bytes32(0),
                 "an address does not have an identity hash"
             );
+        }
+        contractSignerCount[contractHash] = signerAddresses.length;
+        for (uint i = 0; i < signerAddresses.length; i++) {
             contractSignStatus[contractHash][signerAddresses[i]] = SignStatus
                 .NotSigned;
             contractSigners[contractHash].push(signerAddresses[i]);

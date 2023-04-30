@@ -1,9 +1,16 @@
-import { useAccount, useContractRead, useContractWrite, usePrepareContractWrite } from "wagmi";
+import { useAccount, useContractRead, useContractReads, useContractWrite, usePrepareContractWrite } from "wagmi";
 import Cryptracc from "../../../smartcontract/artifacts/contracts/Cryptracc.sol/Cryptracc.json";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { BigNumber } from "ethers";
 
-const zeroHash: `0x${string}` = `0x${"0".repeat(64)}`;
+export type HexString = `0x${string}`;
+export const SignStatus = {
+  0: "Not Invited",
+  1: "Not Signed",
+  2: "Signed",
+};
+export const ZERO_HASH: HexString = `0x${"0".repeat(64)}`;
 
 const cryptraccConfig = {
   address: import.meta.env.VITE_CONTRACT_ADDR,
@@ -11,9 +18,17 @@ const cryptraccConfig = {
 };
 
 export function useIdentitySetup() {
-  const [identityHash, setIdentityHash] = useState<`0x${string}`>(zeroHash);
+  const [identityHash, setIdentityHash] = useState<HexString>(ZERO_HASH);
   const { config } = usePrepareContractWrite({ ...cryptraccConfig, functionName: "submitId", args: [identityHash] });
   return { ...useContractWrite(config), setIdentityHash };
+}
+
+export function useIdentityHash(address: HexString) {
+  return useContractRead({
+    ...cryptraccConfig,
+    functionName: "identityHashes",
+    args: [address],
+  });
 }
 
 export function useIdentitySetupCheck(redirectToSetup = true) {
@@ -28,16 +43,60 @@ export function useIdentitySetupCheck(redirectToSetup = true) {
   useEffect(() => {
     if (!isConnected) {
       navigate("/");
-    }
-  }, [isConnected, navigate]);
-
-  useEffect(() => {
-    if (isConnected && !isLoading && !isError) {
-      if (!redirectToSetup && data !== zeroHash) {
-        navigate("/dashboard");
-      } else if (data === zeroHash) {
-        navigate("/setup");
+    } else {
+      if (!isLoading && !isError) {
+        if (!redirectToSetup && data !== ZERO_HASH) {
+          navigate("/dashboard");
+        } else if (data === ZERO_HASH) {
+          navigate("/setup");
+        }
       }
     }
   }, [data, isLoading, isError, navigate, redirectToSetup, isConnected]);
+}
+
+export function useCryptraccCreate(contractHash: HexString, signerAddresses: HexString[]) {
+  const { config } = usePrepareContractWrite({
+    ...cryptraccConfig,
+    functionName: "createContract",
+    args: [contractHash, signerAddresses],
+  });
+  return useContractWrite(config);
+}
+
+export function useCryptraccContract(contractHash: HexString) {
+  const { data: signerCount } = useContractRead({
+    ...cryptraccConfig,
+    functionName: "contractSignerCount",
+    args: [contractHash],
+  });
+  const { data: signerAddresses } = useContractReads({
+    contracts: signerCount
+      ? [...Array((signerCount as BigNumber).toNumber()).keys()].map((i) => ({
+          ...cryptraccConfig,
+          functionName: "contractSigners",
+          args: [contractHash, i],
+        }))
+      : [],
+  });
+  const { data } = useContractReads({
+    contracts: signerAddresses
+      ? signerAddresses.map((address) => ({
+          ...cryptraccConfig,
+          functionName: "contractSignStatus",
+          args: [contractHash, address],
+        }))
+      : [],
+  });
+  return {
+    contractSignStatus: data?.map((signStatus, i) => ({ address: signerAddresses?.[i], signStatus })),
+  };
+}
+
+export function useCryptraccSign(contractHash: HexString) {
+  return usePrepareContractWrite({
+    ...cryptraccConfig,
+    functionName: "signContract",
+    args: [contractHash],
+  });
 }

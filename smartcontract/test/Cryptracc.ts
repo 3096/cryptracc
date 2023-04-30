@@ -50,6 +50,7 @@ describe("Cryptracc", function () {
         await cryptracc.createContract(fakeContract, [owner.address]);
         expect(await cryptracc.contractSignStatus(fakeContract, owner.address)).to.equal(1);
         expect(await cryptracc.contractSigners(fakeContract, 0)).to.eql(owner.address);
+        expect(await cryptracc.contractSignerCount(fakeContract)).to.equal(1);
       });
 
       it("Should not be able to create contract if no identity", async function () {
