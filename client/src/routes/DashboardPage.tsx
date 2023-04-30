@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {useState} from 'react' ;
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
+
+
 //import { HexString, ZERO_HASH, useCryptraccCreate, useIdentitySetupCheck } from "../hooks/cryptracc";
 
 export default function DashboardPage() {  
@@ -27,6 +27,8 @@ export default function DashboardPage() {
     <div>
       <img className="avatar" />
       <Profile/>
+      <ContractButton/>
+      <BasicTable/>
     </div>
   );
 }
@@ -49,6 +51,89 @@ function Profile(){
     </>
   );
 }
+
+import { Button } from "@mui/material";
+
+function ContractButton(){
+  return(
+    <center>
+        <Button
+          variant="contained"
+          component="label"
+          sx={{
+            height: 50,
+            width: 250,
+            bgcolor: `#30B46C`,
+            color: `#FFFFFF`,
+            borderRadius: 3,
+          }}
+        >
+          <strong>Create Contract</strong>
+        </Button>
+      </center>
+  );
+}
+
+import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
+
+function createData(unAuthorizedContract, AuthorizedContract) {
+  return { unAuthorizedContract, AuthorizedContract };
+}
+
+ const rows = [
+  createData(1, 1),
+  createData(2, 2),
+  createData(3, 3 ),
+  createData(4, 4 ),
+  createData(5, 5)
+ ];
+
+ 
+function BasicTable() {
+  return (
+    <TableContainer component={Paper}>
+      <Table aria-label="simple table">
+        <TableHead>
+          <TableRow>
+            <TableCell>Un-Authorized Contract</TableCell>
+            <TableCell align="right">Authorized Contract</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {rows.map((row) => (
+            <TableRow key={row.unAuthorizedContract}>
+              <TableCell component="th" scope="row">
+                {row.unAuthorizedContract}
+              </TableCell>
+              <TableCell align="right">{row.AuthorizedContract}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+ }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
