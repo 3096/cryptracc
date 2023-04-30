@@ -6,13 +6,19 @@ import DashboardPage from "./routes/DashboardPage";
 import SetupPage from "./routes/SetupPage";
 import LookupPage from "./routes/LookupPage";
 import ContractPage from "./routes/ContractPage";
-import { WagmiConfig, createClient } from "wagmi";
-import { getDefaultProvider } from "ethers";
+import { WagmiConfig, configureChains, createClient } from "wagmi";
 import Navbar from "./components/Navbar";
+import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
+import { hardhat } from "@wagmi/chains";
+
+const { provider } = configureChains(
+  [hardhat],
+  [jsonRpcProvider({ rpc: () => ({ http: import.meta.env.VITE_RPC_URL }) })]
+);
 const wagmiClient = createClient({
   autoConnect: true,
-  provider: getDefaultProvider(),
+  provider: provider,
 });
 
 const router = createBrowserRouter([

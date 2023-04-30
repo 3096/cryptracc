@@ -17,112 +17,76 @@ describe("Cryptracc", function () {
     return { cryptracc, owner, otherAccount };
   }
 
-  // describe("Deployment", function () {
-  //   it("Should set the right unlockTime", async function () {
-  //     const { lock, unlockTime } = await loadFixture(deployOneYearLockFixture);
-
-  //     expect(await lock.unlockTime()).to.equal(unlockTime);
-  //   });
-
-  //   it("Should set the right owner", async function () {
-  //     const { lock, owner } = await loadFixture(deployOneYearLockFixture);
-
-  //     expect(await lock.owner()).to.equal(owner.address);
-  //   });
-
-  //   it("Should receive and store the funds to lock", async function () {
-  //     const { lock, lockedAmount } = await loadFixture(
-  //       deployOneYearLockFixture
-  //     );
-
-  //     expect(await ethers.provider.getBalance(lock.address)).to.equal(
-  //       lockedAmount
-  //     );
-  //   });
-
-  //   it("Should fail if the unlockTime is not in the future", async function () {
-  //     // We don't use the fixture here because we want a different deployment
-  //     const latestTime = await time.latest();
-  //     const Lock = await ethers.getContractFactory("Lock");
-  //     await expect(Lock.deploy(latestTime, { value: 1 })).to.be.revertedWith(
-  //       "Unlock time should be in the future"
-  //     );
-  //   });
-  // });
   describe("Identity", function () {
     it("Should be able to submit id", async function () {
       const { cryptracc, owner } = await loadFixture(deployFixture);
-      cryptracc.submitId("0x1234");
-      expect(await cryptracc.identityHashes(owner.address)).to.equal("0x1234");
+      const fakeId = "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+      await cryptracc.submitId(fakeId);
+      expect(await cryptracc.identityHashes(owner.address)).to.equal(fakeId);
+    });
+
+    it("Identity hash should be 0x0 if not submitted", async function () {
+      const { cryptracc } = await loadFixture(deployFixture);
+      expect(await cryptracc.identityHashes("0xffffffffffffffffffffffffffffffffffffffff")).to.equal(
+        "0x0000000000000000000000000000000000000000000000000000000000000000"
+      );
+    });
+
+    it("Should not be able to submit id if already submitted", async function () {
+      const { cryptracc } = await loadFixture(deployFixture);
+      const fakeId = "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+      await cryptracc.submitId(fakeId);
+      await expect(cryptracc.submitId(fakeId)).to.be.revertedWith("identity hash already exists");
     });
   });
 
-  // describe("Contract", function () {
-  //   describe("Creation", function () {
-  //     before(async function () {
-  //       const { cryptracc } = await loadFixture(deployFixture);
-  //       cryptracc.createContract(
-  //     it("Should revert with the right error if called too soon", async function () {
-  //       const { lock } = await loadFixture(deployOneYearLockFixture);
+  describe("Contract", function () {
+    describe("Create", function () {
+      it("Should be able to create contract", async function () {
+        const { cryptracc, owner } = await loadFixture(deployFixture);
+        const fakeId = "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+        await cryptracc.submitId(fakeId);
+        const fakeContract = "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdee";
+        await cryptracc.createContract(fakeContract, [owner.address]);
+        expect(await cryptracc.contractSignStatus(fakeContract, owner.address)).to.equal(1);
+        expect(await cryptracc.contractSigners(fakeContract, 0)).to.eql(owner.address);
+        expect(await cryptracc.contractSignerCount(fakeContract)).to.equal(1);
+      });
 
-  //       await expect(lock.withdraw()).to.be.revertedWith(
-  //         "You can't withdraw yet"
-  //       );
-  //     });
+      it("Should not be able to create contract if no identity", async function () {
+        const { cryptracc, owner } = await loadFixture(deployFixture);
+        const fakeContract = "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdee";
+        await expect(cryptracc.createContract(fakeContract, [owner.address])).to.be.revertedWith(
+          "an address does not have an identity hash"
+        );
+      });
 
-  //     it("Should revert with the right error if called from another account", async function () {
-  //       const { lock, unlockTime, otherAccount } = await loadFixture(
-  //         deployOneYearLockFixture
-  //       );
+      it("Should not be able to create contract if contract already exists", async function () {
+        const { cryptracc, owner } = await loadFixture(deployFixture);
+        const fakeId = "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+        await cryptracc.submitId(fakeId);
+        const fakeContract = "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdee";
+        await cryptracc.createContract(fakeContract, [owner.address]);
+        await expect(cryptracc.createContract(fakeContract, [owner.address])).to.be.revertedWith(
+          "contract already exists"
+        );
+      });
+    });
 
-  //       // We can increase the time in Hardhat Network
-  //       await time.increaseTo(unlockTime);
+    describe("Signing", function () {
+      it("Should not be able to sign if no identity", async function () {
+        const { cryptracc } = await loadFixture(deployFixture);
+        const fakeContract = "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+        await expect(cryptracc.signContract(fakeContract)).to.be.revertedWith("no identity hash");
+      });
 
-  //       // We use lock.connect() to send a transaction from another account
-  //       await expect(lock.connect(otherAccount).withdraw()).to.be.revertedWith(
-  //         "You aren't the owner"
-  //       );
-  //     });
-
-  //     it("Shouldn't fail if the unlockTime has arrived and the owner calls it", async function () {
-  //       const { lock, unlockTime } = await loadFixture(
-  //         deployOneYearLockFixture
-  //       );
-
-  //       // Transactions are sent using the first signer by default
-  //       await time.increaseTo(unlockTime);
-
-  //       await expect(lock.withdraw()).not.to.be.reverted;
-  //     });
-  //   });
-
-  //   describe("Events", function () {
-  //     it("Should emit an event on withdrawals", async function () {
-  //       const { lock, unlockTime, lockedAmount } = await loadFixture(
-  //         deployOneYearLockFixture
-  //       );
-
-  //       await time.increaseTo(unlockTime);
-
-  //       await expect(lock.withdraw())
-  //         .to.emit(lock, "Withdrawal")
-  //         .withArgs(lockedAmount, anyValue); // We accept any value as `when` arg
-  //     });
-  //   });
-
-  //   describe("Transfers", function () {
-  //     it("Should transfer the funds to the owner", async function () {
-  //       const { lock, unlockTime, lockedAmount, owner } = await loadFixture(
-  //         deployOneYearLockFixture
-  //       );
-
-  //       await time.increaseTo(unlockTime);
-
-  //       await expect(lock.withdraw()).to.changeEtherBalances(
-  //         [owner, lock],
-  //         [lockedAmount, -lockedAmount]
-  //       );
-  //     });
-  //   });
-  // });
+      it("Should not be able to sign if contract does not exist", async function () {
+        const { cryptracc } = await loadFixture(deployFixture);
+        const fakeId = "0x6923456789abcdef0123456789abcdef0123456789abcdef0123456789abcdff";
+        await cryptracc.submitId(fakeId);
+        const fakeContract = "0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
+        await expect(cryptracc.signContract(fakeContract)).to.be.revertedWith("cannot sign contract");
+      });
+    });
+  });
 });

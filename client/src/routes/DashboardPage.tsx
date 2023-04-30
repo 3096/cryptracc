@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React from 'react';
 import {useState} from 'react' ;
 import Box from '@mui/material/Box';
@@ -20,6 +21,13 @@ export default function DashboardPage() {
       <App/>
     </div>
   );
+=======
+import { useIdentitySetupCheck } from "../hooks/cryptracc";
+
+export default function DashboardPage() {
+  useIdentitySetupCheck();
+  return <>this is the dashboard page</>;
+>>>>>>> 663dcba1caf96a0578996e82c7c7adde95c3394b
 }
 
 //Name of the user
