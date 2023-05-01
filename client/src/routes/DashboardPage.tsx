@@ -53,10 +53,14 @@ function Profile(){
 }
 
 import { Button } from "@mui/material";
+import { Link } from 'react-router-dom';
+
+
 
 function ContractButton(){
   return(
     <center>
+      <Link to="http://localhost:5173/create" > {/* specify the target path here */}
         <Button
           variant="contained"
           component="label"
@@ -70,9 +74,11 @@ function ContractButton(){
         >
           <strong>Create Contract</strong>
         </Button>
-      </center>
+      </Link>
+    </center>
   );
 }
+
 
 import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
 
