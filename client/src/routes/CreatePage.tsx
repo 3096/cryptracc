@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 //import { HexString, ZERO_HASH, useCryptraccCreate, useIdentitySetupCheck } from "../hooks/cryptracc";
 
 export default function CreatePage() {
+
+  
   // useIdentitySetupCheck();
   // const [contractHash, setContractHash] = useState<HexString>(ZERO_HASH);
   // const [signerAddresses, setSignerAddresses] = useState<HexString[]>([]);
@@ -26,8 +28,6 @@ export default function CreatePage() {
   </>
   );
 }
-
-
 function App() {
   const [users, setUsers] = useState([]);
   const [showForm, setShowForm] = useState(false);
@@ -37,6 +37,7 @@ function App() {
   const [sign1, setsign1] = useState("");
   const [sign2, setsign2] = useState("");
   const [file, setFile] = useState(null);
+  const [numUsers, setNumUsers] = useState(0);
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -50,11 +51,8 @@ function App() {
       file: file,
     };
     
-    //For debugg purpouse
-    console.log(users);
-
     // add the new user object to the users array
-    setUsers(prevState => [...prevState, users]);
+    setUsers(prevState => [...prevState, user]);
 
     // reset the form fields and close the form
     setName("");
@@ -65,64 +63,70 @@ function App() {
     setFile(null);
     e.target.reset();
     setShowForm(false);
-
-  //   // send the data to the server
-  //   fetch("https://example.com/api/v1/contracts", {
-  //     method: "POST",
-  //     body: JSON.stringify(users),
-  //   })
-  //   .then((response) => {
-  //     if (response.ok) {
-  //       console.log("Success!");
-  //     } else {
-  //       console.log("Error: " + response.status);
-  //     }
-  //   })
-  //   .catch((error) => {
-  //     console.log("Error: " + error);
-  //   }); 
   }
-  
+
   function handleFileChange(e) {
     setFile(e.target.files[0]);
   }
-  return (
-        <div className="form-popup">
-          <form onSubmit={handleSubmit}>
+  
+  function consoleUsers() {
+    console.log("Users:");
+    for (let user of users) {
+      console.log(user);
+    }
+  }
+
+  function handleNumUsersChange(e) {
+    setNumUsers(parseInt(e.target.value));
+  }
+
+  function renderUserForm() {
+    const userForms = [];
+    for (let i = 0; i < numUsers; i++) {
+      userForms.push(
+        <div key={i}>
+          <h3>Enter user {i + 1} information:</h3>
+          <label>
+            user{i + 1} HashId:
+            <input type="text" value={i === 0 ? id1 : id2} onChange={e => i === 0 ? setid1(e.target.value) : setid2(e.target.value)} />
+          </label>
           <br />
-            <label>
-              Contract Name:
-              <input type="text" value={name} onChange={e => setName(e.target.value)} />
-            </label>
-            <br />
-            <label>
-              Choose a file:
-              <input type="file" onChange={handleFileChange} />
-            </label>
-            <br />
-            <label>
-              user1 HashId:
-              <input type="text" value={id1} onChange={e => setid1(e.target.value)} />
-            </label>
-            <br />
-            <label>
-              user2 HashId:
-              <input type="text" value={id2} onChange={e => setid2(e.target.value)} />
-            </label>
-            <br />
-            <label>
-              Signature_User1:
-              <textarea value={sign1} onChange={e => setsign1(e.target.value)} />
-            </label>
-            <label>
-              <br />
-              Signature_User2:
-              <textarea value={sign2} onChange={e => setsign2(e.target.value)} />
-            </label>
-            <br />
-            <button type="submit">Submit</button>
-            <button onClick={() => setShowForm(false)}>Close</button>
-          </form>
+          <label>
+            Signature_User{i + 1}:
+            <textarea value={i === 0 ? sign1 : sign2} onChange={e => i === 0 ? setsign1(e.target.value) : setsign2(e.target.value)} />
+          </label>
+          <br />
         </div>
+      );
+    }
+    return userForms;
+  }
+  
+  return (
+    <div className="form-popup">
+      <form onSubmit={handleSubmit}>
+        <h2>Enter contract information:</h2>
+        <label>
+          Contract Name:
+          <input type="text" value={name} onChange={e => setName(e.target.value)} />
+        </label>
+        <br />
+        <label>
+          Choose a file:
+          <input type="file" onChange={handleFileChange} />
+        </label>
+        <br />
+        <label>
+          Number of users:
+          <input type="number" min="1" value={numUsers} onChange={handleNumUsersChange} />
+        </label>
+        <br />
+        {renderUserForm()}
+        <br />
+        <button onClick={consoleUsers}>Submit</button>
+        <button onClick={() => setShowForm(false)}>Close</button>
+      </form>
+    </div>
   );
 }
+    
