@@ -54,25 +54,31 @@ function Profile(){
 
 import { Button } from "@mui/material";
 
-function ContractButton(){
-  return(
+function ContractButton() {
+  const handleButtonClick = () => {
+    window.location.href = 'http://localhost:5173/create';
+  }
+
+  return (
     <center>
-        <Button
-          variant="contained"
-          component="label"
-          sx={{
-            height: 50,
-            width: 250,
-            bgcolor: `#30B46C`,
-            color: `#FFFFFF`,
-            borderRadius: 3,
-          }}
-        >
-          <strong>Create Contract</strong>
-        </Button>
-      </center>
+      <Button
+        variant="contained"
+        component="label"
+        sx={{
+          height: 50,
+          width: 250,
+          bgcolor: `#30B46C`,
+          color: `#FFFFFF`,
+          borderRadius: 3,
+        }}
+        onClick={handleButtonClick}
+      >
+        <strong>Create Contract</strong>
+      </Button>
+    </center>
   );
 }
+
 
 import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
 
@@ -113,7 +119,6 @@ function BasicTable() {
     </TableContainer>
   );
  }
-
 
 
 

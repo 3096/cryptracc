@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react"; 
+import { Button } from "@mui/material";
+
 //import { HexString, ZERO_HASH, useCryptraccCreate, useIdentitySetupCheck } from "../hooks/cryptracc";
 
 export default function CreatePage() {
@@ -101,7 +103,54 @@ function App() {
     }
     return userForms;
   }
+
+
+  function BackButton() {
+    const handleButtonClick = () => {
+      window.location.href = 'http://localhost:5173/dashboard';
+    }
   
+    return (
+      <center>
+        <Button
+          variant="contained"
+          component="label"
+          sx={{
+            height: 50,
+            width: 250,
+            bgcolor: `#30B46C`,
+            color: `#FFFFFF`,
+            borderRadius: 3,
+          }}
+          onClick={handleButtonClick}
+        >
+          Back
+        </Button>
+      </center>
+    );
+  }
+
+  function submitButton() {
+    return (
+      <center>
+        <Button
+          variant="contained"
+          component="label"
+          sx={{
+            height: 50,
+            width: 250,
+            bgcolor: `#30B46C`,
+            color: `#FFFFFF`,
+            borderRadius: 3,
+          }}
+          onClick={consoleUsers}
+        >
+          Submit
+        </Button>
+      </center>
+    );
+  }
+
   return (
     <div className="form-popup">
       <form onSubmit={handleSubmit}>
@@ -123,8 +172,9 @@ function App() {
         <br />
         {renderUserForm()}
         <br />
-        <button onClick={consoleUsers}>Submit</button>
-        <button onClick={() => setShowForm(false)}>Close</button>
+        {submitButton()}
+        <br/>
+        {BackButton()}
       </form>
     </div>
   );
