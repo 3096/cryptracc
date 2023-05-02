@@ -1,34 +1,29 @@
-import React, { useEffect } from 'react';
-import {useState} from 'react' ;
+import React, { useEffect } from "react";
+import { useState } from "react";
+import { useAccount } from "wagmi";
+import { useNavigate } from "react-router-dom";
 
+import {
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+} from "@mui/material";
+import { useIdentitySetupCheck } from "../hooks/cryptracc";
 
 //import { HexString, ZERO_HASH, useCryptraccCreate, useIdentitySetupCheck } from "../hooks/cryptracc";
 
-export default function DashboardPage() {  
-  // useIdentitySetupCheck();
-  // const [contractHash, setContractHash] = useState<HexString>(ZERO_HASH);
-  // const [signerAddresses, setSignerAddresses] = useState<HexString[]>([]);
-  // const { data, isLoading, isSuccess, write } = useCryptraccCreate(contractHash, signerAddresses);
-
-  // // this is just a test, write your actual damn code
-  // const [tested, setTested] = useState(false);
-  // useEffect(() => {
-  //   if (!tested) {
-  //     setContractHash("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
-  //     setSignerAddresses(["0x70997970C51812dc3A010C7d01b50e0d17dc79C8", "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"]);
-  //     if (write) {
-  //       write();
-  //       setTested(true);
-  //     }
-  //   }
-  // }, [setContractHash, setSignerAddresses, tested, write]);
-  // console.log(data, isLoading, isSuccess);
-  return(
+export default function DashboardPage() {
+  useIdentitySetupCheck();
+  return (
     <div>
       <img className="avatar" />
-      <Profile/>
-      <ContractButton/>
-      <BasicTable/>
+      <Profile />
+      <ContractButton />
     </div>
   );
 }
@@ -36,28 +31,29 @@ export default function DashboardPage() {
 //Name of the user
 //Later on we will get userName from the signup/login page
 const user = {
-  name: 'User Name',
+  name: "User Name",
   imageSize: 200,
 };
-
 
 /*
 Information about the user
 */
-function Profile(){
-  return(
+function Profile() {
+  const { address } = useAccount();
+  return (
     <>
-      <p>Welcome <b>{user.name} </b> to CryptAcc's DashBoard</p>
+      <p>
+        Welcome <b>{address} </b> to CryptAcc's DashBoard
+      </p>
     </>
   );
 }
 
-import { Button } from "@mui/material";
-
 function ContractButton() {
+  const navigate = useNavigate();
   const handleButtonClick = () => {
-    window.location.href = 'http://localhost:5173/create';
-  }
+    navigate("/create");
+  };
 
   return (
     <center>
@@ -79,22 +75,18 @@ function ContractButton() {
   );
 }
 
-
-import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
-
 function createData(unAuthorizedContract, AuthorizedContract) {
   return { unAuthorizedContract, AuthorizedContract };
 }
 
- const rows = [
+const rows = [
   createData(1, 1),
   createData(2, 2),
-  createData(3, 3 ),
-  createData(4, 4 ),
-  createData(5, 5)
- ];
+  createData(3, 3),
+  createData(4, 4),
+  createData(5, 5),
+];
 
- 
 function BasicTable() {
   return (
     <TableContainer component={Paper}>
@@ -118,28 +110,4 @@ function BasicTable() {
       </Table>
     </TableContainer>
   );
- }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+}
