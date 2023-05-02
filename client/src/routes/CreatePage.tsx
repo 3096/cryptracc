@@ -32,7 +32,7 @@ function App() {
 
   useEffect(() => {
     if (isSuccess) {
-      navigate(`/${contractHash}`);
+      navigate(`contract/${contractHash}`);
     }
   }, [isSuccess, navigate, contractHash]);
 
