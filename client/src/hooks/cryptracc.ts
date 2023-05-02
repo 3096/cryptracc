@@ -94,9 +94,10 @@ export function useCryptraccContract(contractHash: HexString) {
 }
 
 export function useCryptraccSign(contractHash: HexString) {
-  return usePrepareContractWrite({
+  const { config } = usePrepareContractWrite({
     ...cryptraccConfig,
     functionName: "signContract",
     args: [contractHash],
   });
+  return useContractWrite(config);
 }
