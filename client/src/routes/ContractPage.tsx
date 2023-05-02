@@ -25,7 +25,7 @@ import { ethers } from "ethers";
 // ];
 
 const provider = new ethers.providers.Web3Provider(window.ethereum);
-const connectedWalletAddress = await provider.getSigner().getAddress();
+const walletAddress = await provider.getSigner().getAddress();
 
 const Demo = styled("div")(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
@@ -39,7 +39,6 @@ export default function ContractPage() {
   const [validatedContractHash, setContractHash] = React.useState<HexString>(ZERO_HASH);
   const { contractSignStatus } = useCryptraccContract(validatedContractHash);
   const [signature, setSignature] = React.useState(""); // user-inputted signature
-  const [validSignature, setValidSignature] = React.useState("");
   const [contractStatus, setContractStatus] = React.useState("Incomplete");
   const { data, isLoading, isSuccess, write } = useCryptraccSign(validatedContractHash);
 
@@ -54,6 +53,7 @@ export default function ContractPage() {
 
   // contractSignStatus contains (k|v={address: hash, signStatus: num})
   console.log(contractSignStatus);
+  console.log(walletAddress);
 
   // get all signers
   const signers: { id: HexString; status: string; }[] = [];
@@ -69,21 +69,17 @@ export default function ContractPage() {
   };
 
   const onClick = () => {
-    if (signature == connectedWalletAddress) {
+    if (signature == walletAddress) {
       write?.();
-      // const signer = signers.find(({ id }) => id == connectedWalletAddress);
+
+      // const signer = signers.find(({ id }) => id == walletAddress);
       // if (signer && signer.status == "1") { // not signed yet
       //   signer.status = "2";
-      //   setValidSignature(connectedWalletAddress)
       // }
     }
   };
   
   React.useEffect(() => {
-    if (validSignature == connectedWalletAddress) {
-      console.log("VALID SIGNATURE");
-    }
-    
     // check contract completedness status
     var complete = true;
     signers.forEach(function (signer) {
@@ -92,7 +88,7 @@ export default function ContractPage() {
       }
     });
     setContractStatus(complete ? "Complete" : "Incomplete");
-  }, [validSignature]);
+  }, [isSuccess]);
 
   return (
     <div className="contractPage">
@@ -142,7 +138,6 @@ export default function ContractPage() {
                   color={signer.status=="2" ? "success" : "warning"}
                   label={signer.status=="2" ? <strong>SIGNED</strong> : <strong>NOT SIGNED</strong>}
                 />
-                <Chip color={signer.status ? "success" : "warning"} label={signer.status ? <strong>SIGNED</strong> : <strong>NOT SIGNED</strong>}/>
               </ListItem>
               {i != signers.length - 1 ? <Divider variant="inset" component="li" /> : null}
             </div>
