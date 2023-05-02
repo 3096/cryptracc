@@ -7,25 +7,10 @@ import {
   useCryptraccCreate,
   useIdentitySetupCheck,
 } from "../hooks/cryptracc";
+import { useNavigate } from "react-router-dom";
 
 export default function CreatePage() {
   useIdentitySetupCheck();
-  // const [signerAddresses, setSignerAddresses] = useState<HexString[]>([]);
-  // const { data, isLoading, isSuccess, write } = useCryptraccCreate(contractHash, signerAddresses);
-
-  // // this is just a test, write your actual damn code
-  // const [tested, setTested] = useState(false);
-  // useEffect(() => {
-  //   if (!tested) {
-  //     setContractHash("0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF");
-  //     setSignerAddresses(["0x70997970C51812dc3A010C7d01b50e0d17dc79C8", "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC"]);
-  //     if (write) {
-  //       write();
-  //       setTested(true);
-  //     }
-  //   }
-  // }, [setContractHash, setSignerAddresses, tested, write]);
-  // console.log(data, isLoading, isSuccess);
   return (
     <>
       <App />
@@ -37,57 +22,54 @@ function App() {
   const [contract, setContract] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [name, setName] = useState("");
-  const [file, setFile] = useState(null);
-  const [numUsers, setNumUsers] = useState(0);
-  const [walletAddresses, setWalletAddresses] = useState([]);
+  const [numUsers, setNumUsers] = useState(1);
+  const [walletAddresses, setWalletAddresses] = useState<string[]>([]);
   const { isSuccess, write } = useCryptraccCreate(
     contractHash,
-    walletAddresses
+    walletAddresses as HexString[] // TODO: sanitize this input
   );
+  const navigate = useNavigate();
 
-  // function handleSubmit(e) {
-  //   e.preventDefault();
-  //   const formData = new FormData(e.target);
-
-  //   const contract = {
-  //     name : name,
-  //     file: file,
-  //     numUsers: numUsers,
-  //     walletAddress : walletAddress
-
-  //   };
-
-  //   // add the new contract object to the contracts array
-  //   setContract(prevState => [...prevState, contracts]);
-
-  //   // reset the form fields and close the form
-  //   e.target.reset();
-  //   setShowForm(false);
-  // }
-
-  function handleFileChange(e) {
-    setFile(e.target.files[0]);
-  }
+  useEffect(() => {
+    if (isSuccess) {
+      navigate(`/${contractHash}`);
+    }
+  }, [isSuccess, navigate, contractHash]);
 
   function handleSubmit() {
-    write?.();
+    console.log(contractHash);
+    console.log(walletAddresses);
+    if (write) {
+      write();
+    } else {
+      console.log("write isn't here?");
+    }
   }
 
-  function handleNumUsersChange(e) {
+  function handleNumUsersChange(e: { target: { value: string } }) {
     setNumUsers(parseInt(e.target.value));
   }
 
   function renderUserForm() {
-    const userForms = [];
+    const userForms: JSX.Element[] = [];
     for (let i = 0; i < numUsers; i++) {
       userForms.push(
         <div key={i}>
           <h5>User {i + 1}</h5>
           <label>
             Wallet Address:
-            <input type="text" />
+            <input
+              type="text"
+              value={walletAddresses[i]}
+              onChange={(e) => {
+                setWalletAddresses(
+                  [...Array(numUsers).keys()].map((idx) =>
+                    idx === i ? e.target.value : walletAddresses[idx]
+                  )
+                );
+              }}
+            />
           </label>
-          <br />
           <br />
         </div>
       );
@@ -97,7 +79,7 @@ function App() {
 
   function BackButton() {
     const handleButtonClick = () => {
-      window.location.href = "http://localhost:5173/dashboard";
+      navigate("/dashboard");
     };
 
     return (
@@ -144,19 +126,15 @@ function App() {
   return (
     <div className="form-popup">
       <h2>Enter contract information:</h2>
-      <label>
+      {/* <label>
         Contract Name:
         <input
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
-      </label>
+      </label> */}
       <br />
-      <label>
-        Choose a file:
-        <input type="file" onChange={handleFileChange} />
-      </label>
       <FileHashing
         prompt="Choose the contract file"
         setOutput={setContractHash}
