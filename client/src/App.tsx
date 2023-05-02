@@ -6,6 +6,7 @@ import DashboardPage from "./routes/DashboardPage";
 import SetupPage from "./routes/SetupPage";
 import LookupPage from "./routes/LookupPage";
 import ContractPage from "./routes/ContractPage";
+import VerificationPage from "./routes/VerificationPage";
 import { WagmiConfig, configureChains, createClient } from "wagmi";
 import Navbar from "./components/Navbar";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
@@ -28,6 +29,8 @@ const router = createBrowserRouter([
   { path: "/setup", element: <SetupPage /> },
   { path: "/lookup", element: <LookupPage /> },
   { path: "/contract/:contractId", element: <ContractPage /> },
+  { path: "/user", element: <VerificationPage />},
+  { path: "/user/:walletAddress", element: <VerificationPage />}
 ]);
 
 function App() {

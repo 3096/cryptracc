@@ -11,6 +11,7 @@ export const SignStatus = {
   2: "Signed",
 };
 export const ZERO_HASH: HexString = `0x${"0".repeat(64)}`;
+export const ZERO_ADDRESS: HexString = `0x${"0".repeat(40)}`;
 
 const cryptraccConfig = {
   address: import.meta.env.VITE_CONTRACT_ADDR,
