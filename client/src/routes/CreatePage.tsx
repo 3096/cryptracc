@@ -31,38 +31,30 @@ export default function CreatePage() {
   );
 }
 function App() {
-  const [users, setUsers] = useState([]);
+  const [contract, setContract] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [name, setName] = useState("");
-  const [id1, setid1] = useState("");
-  const [id2, setid2] = useState("");
-  const [sign1, setsign1] = useState("");
-  const [sign2, setsign2] = useState("");
+  
+  // const [id1, setid1] = useState("");
+  // const [id2, setid2] = useState("");
+  // const [sign1, setsign1] = useState("");
+  // const [sign2, setsign2] = useState("");
   const [file, setFile] = useState(null);
   const [numUsers, setNumUsers] = useState(0);
 
   function handleSubmit(e) {
     e.preventDefault();
     const formData = new FormData(e.target);
-    const user = {
+    const contract = {
       name : name,
-      id1: id1,
-      id2: id2,
-      sign1: sign1,
-      sign2: sign2,
       file: file,
+      numUsers: numUsers,
     };
     
-    // add the new user object to the users array
-    setUsers(prevState => [...prevState, user]);
+    // add the new contract object to the contracts array
+    setContract(prevState => [...prevState, contracts]);
 
     // reset the form fields and close the form
-    setName("");
-    setid1("");
-    setid2("");
-    setsign1("");
-    setsign2("");
-    setFile(null);
     e.target.reset();
     setShowForm(false);
   }
@@ -72,9 +64,9 @@ function App() {
   }
   
   function consoleUsers() {
-    console.log("Users:");
-    for (let user of users) {
-      console.log(user);
+    console.log("Contracts made:");
+    for (let c of contract) {
+      console.log(c);
     }
   }
 
@@ -87,15 +79,15 @@ function App() {
     for (let i = 0; i < numUsers; i++) {
       userForms.push(
         <div key={i}>
-          <h3>Enter user {i + 1} information:</h3>
+          <h3>User {i + 1} information:</h3>
           <label>
             user{i + 1} HashId:
-            <input type="text" value={i === 0 ? id1 : id2} onChange={e => i === 0 ? setid1(e.target.value) : setid2(e.target.value)} />
+            <input type="text" />
           </label>
           <br />
           <label>
             Signature_User{i + 1}:
-            <textarea value={i === 0 ? sign1 : sign2} onChange={e => i === 0 ? setsign1(e.target.value) : setsign2(e.target.value)} />
+            <textarea/>
           </label>
           <br />
         </div>
@@ -166,8 +158,8 @@ function App() {
         </label>
         <br />
         <label>
-          Number of users:
-          <input type="number" min="1" value={numUsers} onChange={handleNumUsersChange} />
+          Number of users (Max 5 only):
+          <input type="number" min="1" max="5" value={numUsers} onChange={handleNumUsersChange} />
         </label>
         <br />
         {renderUserForm()}
