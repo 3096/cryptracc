@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from "react"; 
+import React, { useEffect, useState } from "react";
 import { Button } from "@mui/material";
-
-//import { HexString, ZERO_HASH, useCryptraccCreate, useIdentitySetupCheck } from "../hooks/cryptracc";
+import FileHashing from "../components/FileHashing";
+import {
+  HexString,
+  ZERO_HASH,
+  useCryptraccCreate,
+  useIdentitySetupCheck,
+} from "../hooks/cryptracc";
 
 export default function CreatePage() {
-
-  
-  // useIdentitySetupCheck();
-  // const [contractHash, setContractHash] = useState<HexString>(ZERO_HASH);
+  useIdentitySetupCheck();
   // const [signerAddresses, setSignerAddresses] = useState<HexString[]>([]);
   // const { data, isLoading, isSuccess, write } = useCryptraccCreate(contractHash, signerAddresses);
 
@@ -24,50 +26,51 @@ export default function CreatePage() {
   //   }
   // }, [setContractHash, setSignerAddresses, tested, write]);
   // console.log(data, isLoading, isSuccess);
-  return(
-  <>
-  <App/>
-  </>
+  return (
+    <>
+      <App />
+    </>
   );
 }
 function App() {
+  const [contractHash, setContractHash] = useState<HexString>(ZERO_HASH);
   const [contract, setContract] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [name, setName] = useState("");
-  
-  // const [id1, setid1] = useState("");
-  // const [id2, setid2] = useState("");
-  // const [sign1, setsign1] = useState("");
-  // const [sign2, setsign2] = useState("");
   const [file, setFile] = useState(null);
   const [numUsers, setNumUsers] = useState(0);
+  const [walletAddresses, setWalletAddresses] = useState([]);
+  const { isSuccess, write } = useCryptraccCreate(
+    contractHash,
+    walletAddresses
+  );
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const contract = {
-      name : name,
-      file: file,
-      numUsers: numUsers,
-    };
-    
-    // add the new contract object to the contracts array
-    setContract(prevState => [...prevState, contracts]);
+  // function handleSubmit(e) {
+  //   e.preventDefault();
+  //   const formData = new FormData(e.target);
 
-    // reset the form fields and close the form
-    e.target.reset();
-    setShowForm(false);
-  }
+  //   const contract = {
+  //     name : name,
+  //     file: file,
+  //     numUsers: numUsers,
+  //     walletAddress : walletAddress
+
+  //   };
+
+  //   // add the new contract object to the contracts array
+  //   setContract(prevState => [...prevState, contracts]);
+
+  //   // reset the form fields and close the form
+  //   e.target.reset();
+  //   setShowForm(false);
+  // }
 
   function handleFileChange(e) {
     setFile(e.target.files[0]);
   }
-  
-  function consoleUsers() {
-    console.log("Contracts made:");
-    for (let c of contract) {
-      console.log(c);
-    }
+
+  function handleSubmit() {
+    write?.();
   }
 
   function handleNumUsersChange(e) {
@@ -79,16 +82,12 @@ function App() {
     for (let i = 0; i < numUsers; i++) {
       userForms.push(
         <div key={i}>
-          <h3>User {i + 1} information:</h3>
+          <h5>User {i + 1}</h5>
           <label>
-            user{i + 1} HashId:
+            Wallet Address:
             <input type="text" />
           </label>
           <br />
-          <label>
-            Signature_User{i + 1}:
-            <textarea/>
-          </label>
           <br />
         </div>
       );
@@ -96,12 +95,11 @@ function App() {
     return userForms;
   }
 
-
   function BackButton() {
     const handleButtonClick = () => {
-      window.location.href = 'http://localhost:5173/dashboard';
-    }
-  
+      window.location.href = "http://localhost:5173/dashboard";
+    };
+
     return (
       <center>
         <Button
@@ -135,7 +133,7 @@ function App() {
             color: `#FFFFFF`,
             borderRadius: 3,
           }}
-          onClick={consoleUsers}
+          onClick={handleSubmit}
         >
           Submit
         </Button>
@@ -145,30 +143,41 @@ function App() {
 
   return (
     <div className="form-popup">
-      <form onSubmit={handleSubmit}>
-        <h2>Enter contract information:</h2>
-        <label>
-          Contract Name:
-          <input type="text" value={name} onChange={e => setName(e.target.value)} />
-        </label>
-        <br />
-        <label>
-          Choose a file:
-          <input type="file" onChange={handleFileChange} />
-        </label>
-        <br />
-        <label>
-          Number of users (Max 5 only):
-          <input type="number" min="1" max="5" value={numUsers} onChange={handleNumUsersChange} />
-        </label>
-        <br />
-        {renderUserForm()}
-        <br />
-        {submitButton()}
-        <br/>
-        {BackButton()}
-      </form>
+      <h2>Enter contract information:</h2>
+      <label>
+        Contract Name:
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+      </label>
+      <br />
+      <label>
+        Choose a file:
+        <input type="file" onChange={handleFileChange} />
+      </label>
+      <FileHashing
+        prompt="Choose the contract file"
+        setOutput={setContractHash}
+      />
+      <br />
+      <label>
+        Number of users (Max 10 only):
+        <input
+          type="number"
+          min="1"
+          max="10"
+          value={numUsers}
+          onChange={handleNumUsersChange}
+        />
+      </label>
+      <br />
+      {renderUserForm()}
+      <br />
+      {submitButton()}
+      <br />
+      {BackButton()}
     </div>
   );
 }
-    
