@@ -12,20 +12,8 @@ import Grid from "@mui/material/Grid";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import { HexString, ZERO_HASH, useCryptraccContract, useCryptraccSign, useIdentitySetupCheck } from "../hooks/cryptracc";
 import { useParams } from "react-router-dom";
-import { ethers } from "ethers";
-
-// const contractId = "contractId"; // temp
-
-// const signers = [
-//   // get all signers here
-//   { id: "signerId1", status: true },
-//   { id: "signerId2", status: true },
-//   { id: "signerId3", status: false },
-//   { id: "signerId4", status: false },
-// ];
-
-const provider = new ethers.providers.Web3Provider(window.ethereum);
-const walletAddress = await provider.getSigner().getAddress();
+import { useAccount } from 'wagmi';
+import { ThemeContext } from '@emotion/react';
 
 const Demo = styled("div")(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
@@ -34,12 +22,13 @@ const Demo = styled("div")(({ theme }) => ({
 }));
 
 export default function ContractPage() {
-  // might not need useIdentitySetupCheck();
+  // useIdentitySetupCheck();
   let { contractId } = useParams();
+  const { address } = useAccount();
   const [validatedContractHash, setContractHash] = React.useState<HexString>(ZERO_HASH);
   const { contractSignStatus } = useCryptraccContract(validatedContractHash);
   const [signature, setSignature] = React.useState(""); // user-inputted signature
-  const [contractStatus, setContractStatus] = React.useState("Incomplete");
+  const [contractStatus, setContractStatus] = React.useState(false);
   const { data, isLoading, isSuccess, write } = useCryptraccSign(validatedContractHash);
 
   React.useEffect(() => {
@@ -53,42 +42,28 @@ export default function ContractPage() {
 
   // contractSignStatus contains (k|v={address: hash, signStatus: num})
   console.log(contractSignStatus);
-  console.log(walletAddress);
-
-  // get all signers
-  const signers: { id: HexString; status: string; }[] = [];
-  if (contractSignStatus) {
-    for (const [_, signer] of Object.entries(contractSignStatus)) {
-      // console.log(`${v.address} ${v.signStatus}`);
-      signers.push({ id: signer.address as HexString, status: signer.signStatus as string});
-    }
-  }
+  console.log(address);
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSignature(event.target.value);
   };
 
   const onClick = () => {
-    if (signature == walletAddress) {
+    if (signature == address) {
       write?.();
-
-      // const signer = signers.find(({ id }) => id == walletAddress);
-      // if (signer && signer.status == "1") { // not signed yet
-      //   signer.status = "2";
-      // }
     }
   };
   
   React.useEffect(() => {
-    // check contract completedness status
-    var complete = true;
-    signers.forEach(function (signer) {
-      if (signer.status == "1") {
+    // check contract completion status
+    let complete = true;
+    contractSignStatus?.forEach(function (signer) {
+      if (signer.signStatus == "1") {
         complete = false;
       }
     });
-    setContractStatus(complete ? "Complete" : "Incomplete");
-  }, [isSuccess]);
+    setContractStatus(complete);
+  }, [contractSignStatus]);
 
   return (
     <div className="contractPage">
@@ -104,7 +79,7 @@ export default function ContractPage() {
       <h2>{contractId}</h2>
 
       <h3>
-        <u>STATUS</u>: {contractStatus}
+        <u>STATUS</u>: {contractStatus ? "Complete" : "Incomplete"}
       </h3>
 
       <TextField
@@ -130,16 +105,16 @@ export default function ContractPage() {
 
       <Demo>
         <List>
-          {signers.map((signer, i) => (
-            <div key={signer.id}>
+          {contractSignStatus?.map((signer, i) => (
+            <div key={i}>
               <ListItem>
-                <ListItemText primary={signer.id} />
+                <ListItemText primary={signer.address as string} />
                 <Chip
-                  color={signer.status=="2" ? "success" : "warning"}
-                  label={signer.status=="2" ? <strong>SIGNED</strong> : <strong>NOT SIGNED</strong>}
+                  color={signer.signStatus=="2" ? "success" : "warning"}
+                  label={signer.signStatus=="2" ? <strong>SIGNED</strong> : <strong>NOT SIGNED</strong>}
                 />
               </ListItem>
-              {i != signers.length - 1 ? <Divider variant="inset" component="li" /> : null}
+              {i != contractSignStatus.length - 1 ? <Divider variant="inset" component="li" /> : null}
             </div>
           ))}
         </List>
