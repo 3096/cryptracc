@@ -1,24 +1,31 @@
 import React from 'react';
 import "./ContractPage.css";
-import { styled } from '@mui/material/styles';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
-import Divider from '@mui/material/Divider';
-import ListItemText from '@mui/material/ListItemText';
-import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import Chip from '@mui/material/Chip';
-import Grid from '@mui/material/Grid';
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import { styled } from "@mui/material/styles";
+import List from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import Divider from "@mui/material/Divider";
+import ListItemText from "@mui/material/ListItemText";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import Chip from "@mui/material/Chip";
+import Grid from "@mui/material/Grid";
+import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
+import { HexString, ZERO_HASH, useCryptraccContract, useCryptraccSign, useIdentitySetupCheck } from "../hooks/cryptracc";
+import { useParams } from "react-router-dom";
+import { ethers } from "ethers";
 
-const contractId = "contractId"; // get contractId here
+// const contractId = "contractId"; // temp
 
-const signers = [ // get all signers here
-  { id: "signerId1", status: true },
-  { id: "signerId2", status: true },
-  { id: "signerId3", status: false },
-  { id: "signerId4", status: false },
-];
+// const signers = [
+//   // get all signers here
+//   { id: "signerId1", status: true },
+//   { id: "signerId2", status: true },
+//   { id: "signerId3", status: false },
+//   { id: "signerId4", status: false },
+// ];
+
+const provider = new ethers.providers.Web3Provider(window.ethereum);
+const connectedWalletAddress = await provider.getSigner().getAddress();
 
 const Demo = styled("div")(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
@@ -27,30 +34,65 @@ const Demo = styled("div")(({ theme }) => ({
 }));
 
 export default function ContractPage() {
+  // might not need useIdentitySetupCheck();
+  let { contractId } = useParams();
+  const [validatedContractHash, setContractHash] = React.useState<HexString>(ZERO_HASH);
+  const { contractSignStatus } = useCryptraccContract(validatedContractHash);
+  const [signature, setSignature] = React.useState(""); // user-inputted signature
+  const [validSignature, setValidSignature] = React.useState("");
   const [contractStatus, setContractStatus] = React.useState("Incomplete");
-  const [signature, setSignature] = React.useState("");
-  const [refresh, setRefresh] = React.useState(false);
+  const { data, isLoading, isSuccess, write } = useCryptraccSign(validatedContractHash);
+
+  React.useEffect(() => {
+    if (contractId && contractId.startsWith("0x") && contractId.length === 66) {
+      setContractHash(`0x${contractId.slice(2)}`);
+    } else {
+      // TODO: handle invalid contractId
+      console.log("Invalid contractId");
+    }
+  }, [contractId, setContractHash]);
+
+  // contractSignStatus contains (k|v={address: hash, signStatus: num})
+  console.log(contractSignStatus);
+
+  // get all signers
+  const signers: { id: HexString; status: string; }[] = [];
+  if (contractSignStatus) {
+    for (const [_, signer] of Object.entries(contractSignStatus)) {
+      // console.log(`${v.address} ${v.signStatus}`);
+      signers.push({ id: signer.address as HexString, status: signer.signStatus as string});
+    }
+  }
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSignature(event.target.value);
   };
 
-  const onClick = () => { // needs validation to check if they own their Id
-    const signer = signers.find(({ id }) => id == signature)
-    if (signer != null) {
-      signer.status = true
-      setRefresh(!refresh); // what
+  const onClick = () => {
+    if (signature == connectedWalletAddress) {
+      write?.();
+      // const signer = signers.find(({ id }) => id == connectedWalletAddress);
+      // if (signer && signer.status == "1") { // not signed yet
+      //   signer.status = "2";
+      //   setValidSignature(connectedWalletAddress)
+      // }
+    }
+  };
+  
+  React.useEffect(() => {
+    if (validSignature == connectedWalletAddress) {
+      console.log("VALID SIGNATURE");
     }
     
     // check contract completedness status
-    var complete = true
-    signers.forEach(function(signer) {
-      if (signer.status == false) {
-        complete = false
+    var complete = true;
+    signers.forEach(function (signer) {
+      if (signer.status == "1") {
+        complete = false;
       }
-    })
-    setContractStatus(complete ? "Complete" : "Imcomplete")
-  }
+    });
+    setContractStatus(complete ? "Complete" : "Incomplete");
+  }, [validSignature]);
 
   return (
     <div className="contractPage">
@@ -63,9 +105,11 @@ export default function ContractPage() {
         </Grid>
       </Grid>
 
-      <h1>{contractId}</h1>
+      <h2>{contractId}</h2>
 
-      <h2><u>STATUS</u>: {contractStatus}</h2>
+      <h3>
+        <u>STATUS</u>: {contractStatus}
+      </h3>
 
       <TextField
         label="Signature"
@@ -93,8 +137,10 @@ export default function ContractPage() {
           {signers.map((signer, i) => (
             <div key={signer.id}>
               <ListItem>
-                <ListItemText
-                  primary={signer.id}
+                <ListItemText primary={signer.id} />
+                <Chip
+                  color={signer.status=="2" ? "success" : "warning"}
+                  label={signer.status=="2" ? <strong>SIGNED</strong> : <strong>NOT SIGNED</strong>}
                 />
                 <Chip color={signer.status ? "success" : "warning"} label={signer.status ? <strong>SIGNED</strong> : <strong>NOT SIGNED</strong>}/>
               </ListItem>
