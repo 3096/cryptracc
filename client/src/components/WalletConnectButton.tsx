@@ -4,7 +4,7 @@ import MetaMask_Fox from "../assets/MetaMask_Fox.svg";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { useConnect } from "wagmi";
 
-export default function WalletConnectButton() {
+export default function WalletConnectButton({ flavorText }: { flavorText?: string }) {
   const { connect } = useConnect({
     connector: new InjectedConnector(),
   });
@@ -24,7 +24,7 @@ export default function WalletConnectButton() {
 
   return (
     <div className="walletConnection">
-      <h3>Connect to your ETH wallet</h3>
+      <h3>{flavorText ?? "Connect to your ETH wallet"}</h3>
 
       <Button
         variant="contained"

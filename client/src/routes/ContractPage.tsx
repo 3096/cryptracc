@@ -23,6 +23,7 @@ import { ThemeContext } from "@emotion/react";
 import { Box, Container, ListItemButton, Typography } from "@mui/material";
 import { isHexString } from "ethers/lib/utils.js";
 import FileHashing from "../components/FileHashing";
+import WalletConnectButton from "../components/WalletConnectButton";
 
 const Demo = styled("div")(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
@@ -33,10 +34,10 @@ const Demo = styled("div")(({ theme }) => ({
 export default function ContractPage() {
   // useIdentitySetupCheck();
   let { contractId } = useParams();
-  const { address } = useAccount();
+  const { address, isConnected } = useAccount();
   const [validatedContractHash, setContractHash] = React.useState<HexString>(ZERO_HASH);
-  const { contractSignStatus: loadedStatus } = useCryptraccContract(validatedContractHash);
-  const [contractSignStatus, setContractSignStatus] = React.useState(loadedStatus);
+  const { contractSignStatus } = useCryptraccContract(validatedContractHash);
+  const [currentlySignedStatus, setCurrentlySignedStatus] = React.useState<Set<HexString>>(new Set<HexString>());
   const [addressConfirm, setAddressConfirm] = React.useState(""); // user-inputted confirmation
   const { data, isLoading, isSuccess, write } = useCryptraccSign(validatedContractHash);
   const [signLoaded, setSignLoaded] = React.useState(false);
@@ -51,23 +52,14 @@ export default function ContractPage() {
     }
   }, [contractId, setContractHash]);
 
-  useEffect(() => {
-    if (contractSignStatus === undefined || contractSignStatus.length === 0) {
-      setContractSignStatus(loadedStatus);
-    }
-  }, [contractSignStatus, loadedStatus]);
-
-  // contractSignStatus contains (k|v={address: hash, signStatus: num})
-  // console.log(contractSignStatus);
-  // console.log(address);
-  // console.log(isSuccess);
-
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setAddressConfirm(event.target.value);
   };
 
   const onClick = () => {
+    console.log(addressConfirm, address);
     if (addressConfirm === address) {
+      console.log("write", write);
       write?.();
     }
   };
@@ -78,12 +70,10 @@ export default function ContractPage() {
     }
     if (signLoaded && isSuccess && contractSignStatus?.find((signer) => signer.address === address)?.signStatus === 1) {
       setAddressConfirm("");
-      setContractSignStatus(
-        contractSignStatus?.map((signer) => (signer.address === address ? { ...signer, signStatus: 2 } : signer))
-      );
+      setCurrentlySignedStatus(new Set<HexString>([...currentlySignedStatus, address!]));
       setSignLoaded(false);
     }
-  }, [address, contractSignStatus, isLoading, isSuccess, signLoaded]);
+  }, [address, contractSignStatus, currentlySignedStatus, isLoading, isSuccess, signLoaded]);
 
   return (
     <Container>
@@ -102,30 +92,38 @@ export default function ContractPage() {
         <h3>
           <u>STATUS</u>: {contractSignStatus?.every((signer) => signer.signStatus === 2) ? "Complete" : "Incomplete"}
         </h3>
-
-        <TextField
-          label="Enter your wallet address to confirm signing"
-          variant="outlined"
-          value={addressConfirm}
-          onChange={onChange}
-          style={{ width: "400px" }}
-        />
-
-        <Button
-          variant="contained"
-          component="label"
-          sx={{
-            height: 50,
-            width: 100,
-            bgcolor: `#30B46C`,
-            color: `#FFFFFF`,
-            borderRadius: 3,
-            marginLeft: 3,
-          }}
-          onClick={onClick}
-        >
-          <strong>SIGN</strong>
-        </Button>
+        {isConnected ? (
+          contractSignStatus?.some((signer) => signer.address === address) && (
+            <>
+              <TextField
+                label="Enter your wallet address to confirm signing"
+                variant="outlined"
+                value={addressConfirm}
+                onChange={onChange}
+                style={{ width: "400px" }}
+              />
+              <Button
+                variant="contained"
+                component="label"
+                sx={{
+                  height: 50,
+                  width: 100,
+                  bgcolor: `#30B46C`,
+                  color: `#FFFFFF`,
+                  borderRadius: 3,
+                  marginLeft: 3,
+                }}
+                onClick={onClick}
+              >
+                <strong>SIGN</strong>
+              </Button>
+            </>
+          )
+        ) : (
+          <>
+            <WalletConnectButton flavorText="If you want to sign this contract, please connect your wallet." />
+          </>
+        )}
 
         <Demo>
           <List>
@@ -135,7 +133,7 @@ export default function ContractPage() {
                   <ListItemButton href={`/user/${signer.address}`}>
                     <ListItemText primary={signer.address as string} />
                   </ListItemButton>
-                  {signer.signStatus === 2 ? (
+                  {signer.signStatus === 2 || currentlySignedStatus.has(signer.address as HexString) ? (
                     <Chip color={"success"} label={<strong>SIGNED</strong>} />
                   ) : (
                     <Chip color={"warning"} label={<strong>NOT SIGNED</strong>} />
