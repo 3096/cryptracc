@@ -17,6 +17,7 @@ contract Cryptracc {
     mapping(bytes32 => uint) public contractSignerCount;
 
     function submitId(bytes32 identityHash) public {
+        require(identityHash != bytes32(0), "identity hash cannot be empty");
         require(
             identityHashes[msg.sender] == bytes32(0),
             "identity hash already exists"
@@ -28,6 +29,7 @@ contract Cryptracc {
         bytes32 contractHash,
         address[] memory signerAddresses
     ) public {
+        require(contractHash != bytes32(0), "contract hash cannot be empty");
         require(
             contractSignerCount[contractHash] == 0,
             "contract already exists"
