@@ -3,9 +3,9 @@ import "./FileHashing.css";
 import { Button } from "@mui/material";
 import { sha256 } from "crypto-hash";
 
-type Props = { prompt: string; setOutput: Dispatch<React.SetStateAction<`0x${string}`>> };
+type Props = { prompt: string; setOutput: Dispatch<React.SetStateAction<`0x${string}`>>; acceptedFormats?: string };
 
-export default function IdUploadButton({ prompt, setOutput }: Props) {
+export default function FileHashing({ prompt, setOutput, acceptedFormats }: Props) {
   const [filename, setFilename] = useState<string>();
   // For handling file input
   const handleFileInput = (e: any) => {
@@ -43,7 +43,7 @@ export default function IdUploadButton({ prompt, setOutput }: Props) {
         }}
       >
         Choose File
-        <input hidden accept="image/*" multiple type="file" onChange={handleFileInput} />
+        <input hidden accept={acceptedFormats ?? "*"} multiple type="file" onChange={handleFileInput} />
       </Button>
       <h4>{filename ?? "No file chosen"}</h4>
     </div>

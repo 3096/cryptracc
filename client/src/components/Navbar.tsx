@@ -17,7 +17,7 @@ const StyledButton = styled(Button)({
 function Navbar() {
   return (
     <div>
-      <AppBar position="static" style={{ justifyContent: "center" }}>
+      <AppBar position="static" style={{ justifyContent: "center", padding: "6px" }}>
         <Toolbar>
           <a href="/">
             <Typography sx={{ fontFamily: "Oleo Script", fontSize: 32, mr: 3, mb: 0.5 }}>cryptracc</Typography>

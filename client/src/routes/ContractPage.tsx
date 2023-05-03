@@ -20,8 +20,9 @@ import {
 import { useParams } from "react-router-dom";
 import { useAccount } from "wagmi";
 import { ThemeContext } from "@emotion/react";
-import { Box, ListItemButton } from "@mui/material";
+import { Box, Container, ListItemButton, Typography } from "@mui/material";
 import { isHexString } from "ethers/lib/utils.js";
+import FileHashing from "../components/FileHashing";
 
 const Demo = styled("div")(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
@@ -39,6 +40,7 @@ export default function ContractPage() {
   const [addressConfirm, setAddressConfirm] = React.useState(""); // user-inputted confirmation
   const { data, isLoading, isSuccess, write } = useCryptraccSign(validatedContractHash);
   const [signLoaded, setSignLoaded] = React.useState(false);
+  const [checkingContractHash, setCheckContractHash] = React.useState(ZERO_HASH);
 
   React.useEffect(() => {
     if (contractId && isHexString(contractId, 32)) {
@@ -84,8 +86,9 @@ export default function ContractPage() {
   }, [address, contractSignStatus, isLoading, isSuccess, signLoaded]);
 
   return (
-    <Box className="contractPage" sx={{ pt: 4 }}>
-      {/* <Grid container justifyContent="flex-start">
+    <Container>
+      <Box className="contractPage" sx={{ pt: 6 }}>
+        {/* <Grid container justifyContent="flex-start">
         <Grid item>
           <Button className="backButton" href="/lookup">
             <ArrowBackIosNewIcon />
@@ -94,55 +97,64 @@ export default function ContractPage() {
         </Grid>
       </Grid> */}
 
-      <h2>{contractId}</h2>
+        <h2>{contractId}</h2>
 
-      <h3>
-        <u>STATUS</u>: {contractSignStatus?.every((signer) => signer.signStatus === 2) ? "Complete" : "Incomplete"}
-      </h3>
+        <h3>
+          <u>STATUS</u>: {contractSignStatus?.every((signer) => signer.signStatus === 2) ? "Complete" : "Incomplete"}
+        </h3>
 
-      <TextField
-        label="Enter your wallet address to confirm signing"
-        variant="outlined"
-        value={addressConfirm}
-        onChange={onChange}
-        style={{ width: "400px" }}
-      />
+        <TextField
+          label="Enter your wallet address to confirm signing"
+          variant="outlined"
+          value={addressConfirm}
+          onChange={onChange}
+          style={{ width: "400px" }}
+        />
 
-      <Button
-        variant="contained"
-        component="label"
-        sx={{
-          height: 50,
-          width: 100,
-          bgcolor: `#30B46C`,
-          color: `#FFFFFF`,
-          borderRadius: 3,
-          marginLeft: 3,
-        }}
-        onClick={onClick}
-      >
-        <strong>SIGN</strong>
-      </Button>
+        <Button
+          variant="contained"
+          component="label"
+          sx={{
+            height: 50,
+            width: 100,
+            bgcolor: `#30B46C`,
+            color: `#FFFFFF`,
+            borderRadius: 3,
+            marginLeft: 3,
+          }}
+          onClick={onClick}
+        >
+          <strong>SIGN</strong>
+        </Button>
 
-      <Demo>
-        <List>
-          {contractSignStatus?.map((signer, i) => (
-            <div key={i}>
-              <ListItem>
-                <ListItemButton href={`/user/${signer.address}`}>
-                  <ListItemText primary={signer.address as string} />
-                </ListItemButton>
-                {signer.signStatus === 2 ? (
-                  <Chip color={"success"} label={<strong>SIGNED</strong>} />
-                ) : (
-                  <Chip color={"warning"} label={<strong>NOT SIGNED</strong>} />
-                )}
-              </ListItem>
-              {i !== contractSignStatus.length - 1 ? <Divider variant="inset" component="li" /> : null}
-            </div>
-          ))}
-        </List>
-      </Demo>
-    </Box>
+        <Demo>
+          <List>
+            {contractSignStatus?.map((signer, i) => (
+              <div key={i}>
+                <ListItem>
+                  <ListItemButton href={`/user/${signer.address}`}>
+                    <ListItemText primary={signer.address as string} />
+                  </ListItemButton>
+                  {signer.signStatus === 2 ? (
+                    <Chip color={"success"} label={<strong>SIGNED</strong>} />
+                  ) : (
+                    <Chip color={"warning"} label={<strong>NOT SIGNED</strong>} />
+                  )}
+                </ListItem>
+                {i !== contractSignStatus.length - 1 ? <Divider variant="inset" component="li" /> : null}
+              </div>
+            ))}
+          </List>
+        </Demo>
+        <FileHashing prompt="Verify contract content" setOutput={setCheckContractHash} />
+        <Typography variant="body1" sx={{ mt: 2 }}>
+          {checkingContractHash === ZERO_HASH
+            ? ""
+            : validatedContractHash === checkingContractHash
+            ? "The contract hash matches the file"
+            : "The contract hash does not match the file"}
+        </Typography>
+      </Box>
+    </Container>
   );
 }

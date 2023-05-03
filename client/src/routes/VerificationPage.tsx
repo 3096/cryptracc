@@ -88,7 +88,7 @@ export default function VerificationPage() {
   return (
     <div>
       <Box>
-        <Typography variant="h6" sx={{ mb: 2, fontFamily: ["Montserrat", "sans-serif"] }}>
+        <Typography variant="h6" sx={{ mt: 6, mb: 2, fontFamily: ["Montserrat", "sans-serif"] }}>
           Enter a Wallet Address for verification
         </Typography>
         <TextField variant="outlined" value={inputWalletAddress} onChange={handleAddressInput} style={{ width: 420 }} />
@@ -114,7 +114,6 @@ export default function VerificationPage() {
           bgcolor: `#30B46C`,
           color: `#FFFFFF`,
           borderRadius: 3,
-          marginLeft: 3,
         }}
         onClick={back}
       >

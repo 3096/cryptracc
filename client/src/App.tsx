@@ -12,6 +12,7 @@ import Navbar from "./components/Navbar";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
 import { hardhat } from "@wagmi/chains";
+import { Box } from "@mui/material";
 
 const { provider } = configureChains(
   [hardhat],
@@ -29,15 +30,17 @@ const router = createBrowserRouter([
   { path: "/setup", element: <SetupPage /> },
   { path: "/lookup", element: <LookupPage /> },
   { path: "/contract/:contractId", element: <ContractPage /> },
-  { path: "/user", element: <VerificationPage />},
-  { path: "/user/:walletAddress", element: <VerificationPage />}
+  { path: "/user", element: <VerificationPage /> },
+  { path: "/user/:walletAddress", element: <VerificationPage /> },
 ]);
 
 function App() {
   return (
     <WagmiConfig client={wagmiClient}>
-      <Navbar />
-      <RouterProvider router={router} />
+      <Box sx={{ display: "flex", flexDirection: "column", height: "100vh", overflow: "hidden", overflowY: "auto" }}>
+        <Navbar />
+        <RouterProvider router={router} />
+      </Box>
     </WagmiConfig>
   );
 }

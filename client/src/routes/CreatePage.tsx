@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Button } from "@mui/material";
+import { Button, TextField, Typography } from "@mui/material";
 import FileHashing from "../components/FileHashing";
-import {
-  HexString,
-  ZERO_HASH,
-  useCryptraccCreate,
-  useIdentitySetupCheck,
-} from "../hooks/cryptracc";
+import { HexString, ZERO_HASH, useCryptraccCreate, useIdentitySetupCheck } from "../hooks/cryptracc";
 import { useNavigate } from "react-router-dom";
 
 export default function CreatePage() {
@@ -47,7 +42,10 @@ function App() {
   }
 
   function handleNumUsersChange(e: { target: { value: string } }) {
-    setNumUsers(parseInt(e.target.value));
+    const num = parseInt(e.target.value);
+    if (num > 0 && num <= 10) {
+      setNumUsers(num);
+    }
   }
 
   function renderUserForm() {
@@ -55,19 +53,22 @@ function App() {
     for (let i = 0; i < numUsers; i++) {
       userForms.push(
         <div key={i}>
-          <h5>User {i + 1}</h5>
+          <Typography variant="h6" sx={{ mt: 4, mb: 1 }}>
+            User {i + 1}
+          </Typography>
           <label>
             Wallet Address:
-            <input
+            <br />
+            <TextField
+              size="small"
               type="text"
               value={walletAddresses[i]}
               onChange={(e) => {
                 setWalletAddresses(
-                  [...Array(numUsers).keys()].map((idx) =>
-                    idx === i ? e.target.value : walletAddresses[idx]
-                  )
+                  [...Array(numUsers).keys()].map((idx) => (idx === i ? e.target.value : walletAddresses[idx]))
                 );
               }}
+              sx={{ width: 420, mt: 1 }}
             />
           </label>
           <br />
@@ -93,6 +94,7 @@ function App() {
             bgcolor: `#30B46C`,
             color: `#FFFFFF`,
             borderRadius: 3,
+            mb: 16,
           }}
           onClick={handleButtonClick}
         >
@@ -114,6 +116,7 @@ function App() {
             bgcolor: `#30B46C`,
             color: `#FFFFFF`,
             borderRadius: 3,
+            mt: 4,
           }}
           onClick={handleSubmit}
         >
@@ -125,7 +128,9 @@ function App() {
 
   return (
     <div className="form-popup">
-      <h2>Enter contract information:</h2>
+      <Typography variant="h4" sx={{ mt: 8 }}>
+        Enter contract information:
+      </Typography>
       {/* <label>
         Contract Name:
         <input
@@ -135,19 +140,18 @@ function App() {
         />
       </label> */}
       <br />
-      <FileHashing
-        prompt="Choose the contract file"
-        setOutput={setContractHash}
-      />
+      <FileHashing prompt="Choose the contract file" setOutput={setContractHash} />
       <br />
       <label>
-        Number of users (Max 10 only):
-        <input
-          type="number"
-          min="1"
-          max="10"
+        Number of users:
+        <br />
+        (max 10)
+        <TextField
+          size="small"
+          InputProps={{ inputProps: { min: 1, max: 10, type: "number" } }}
           value={numUsers}
           onChange={handleNumUsersChange}
+          sx={{ ml: 1, mt: 1, width: 55 }}
         />
       </label>
       <br />

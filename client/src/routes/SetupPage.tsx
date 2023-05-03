@@ -41,7 +41,7 @@ export default function SetupPage() {
         </Alert>
       </div>
 
-      <IdUploadButton prompt="Upload your ID" setOutput={setIdentityHash} />
+      <IdUploadButton prompt="Upload your ID" setOutput={setIdentityHash} acceptedFormats="image/*" />
 
       <center>
         <Button
