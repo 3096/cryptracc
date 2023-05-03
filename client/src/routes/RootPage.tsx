@@ -26,22 +26,6 @@ export default function RootPage() {
       </center>
 
       <WalletConnectButton />
-
-      <center>
-        <Button
-          variant="contained"
-          component="label"
-          sx={{
-            height: 50,
-            width: 250,
-            bgcolor: `#30B46C`,
-            color: `#FFFFFF`,
-            borderRadius: 3,
-          }}
-        >
-          <strong>CONTINUE</strong>
-        </Button>
-      </center>
     </div>
   );
 }
