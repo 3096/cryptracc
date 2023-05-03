@@ -4,39 +4,36 @@ import { Link } from "react-router-dom";
 import "./Navbar.css";
 import { styled } from "@mui/material/styles";
 
-
 const StyledButton = styled(Button)({
-    backgroundColor: "inherit",
-    padding: "6px",
-    color: "inherit",
-    margin: "15px", // Add margin to create spacing between buttons
-    "&:hover": {
-      backgroundColor: "inherit", // Set the desired hover color here
-    },
-  });
+  backgroundColor: "inherit",
+  padding: "6px",
+  color: "inherit",
+  margin: "8px", // Add margin to create spacing between buttons
+  "&:hover": {
+    backgroundColor: "inherit", // Set the desired hover color here
+  },
+});
 
 function Navbar() {
   return (
     <div>
-        <AppBar position="static" style={{ justifyContent: "center" }}>
+      <AppBar position="static" style={{ justifyContent: "center" }}>
         <Toolbar>
           <a href="/">
-            <Typography sx={{ fontFamily: "Oleo Script", fontSize: 32 }}>
-              cryptracc
-            </Typography>
+            <Typography sx={{ fontFamily: "Oleo Script", fontSize: 32, mr: 3, mb: 0.5 }}>cryptracc</Typography>
           </a>
-          <StyledButton variant="contained" href="/">
+          <StyledButton variant="contained" href="/dashboard">
             Home
-            </StyledButton>
-            <StyledButton variant="contained" href="/dashboard">
-            Dashboard
-            </StyledButton>
-            <StyledButton variant="contained" href="/create">
-            Create
-            </StyledButton>
-            <StyledButton variant="contained" href="/user">
-            User
-            </StyledButton>
+          </StyledButton>
+          <StyledButton variant="contained" href="/create">
+            Create Contract
+          </StyledButton>
+          <StyledButton variant="contained" href="/lookup">
+            Lookup Contract
+          </StyledButton>
+          <StyledButton variant="contained" href="/user">
+            Verify User
+          </StyledButton>
         </Toolbar>
       </AppBar>
     </div>

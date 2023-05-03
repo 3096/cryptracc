@@ -12,6 +12,7 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Typography,
 } from "@mui/material";
 import { useIdentitySetupCheck } from "../hooks/cryptracc";
 
@@ -42,9 +43,9 @@ function Profile() {
   const { address } = useAccount();
   return (
     <>
-      <p>
-        Welcome <b>{address} </b> to CryptAcc's DashBoard
-      </p>
+      <Typography variant="h5" sx={{ my: 4 }}>
+        Welcome, User <b>{address}</b>
+      </Typography>
     </>
   );
 }
@@ -69,7 +70,7 @@ function ContractButton() {
         }}
         onClick={handleButtonClick}
       >
-        <strong>Create Contract</strong>
+        <strong>Create a Contract</strong>
       </Button>
     </center>
   );
@@ -79,13 +80,7 @@ function createData(unAuthorizedContract, AuthorizedContract) {
   return { unAuthorizedContract, AuthorizedContract };
 }
 
-const rows = [
-  createData(1, 1),
-  createData(2, 2),
-  createData(3, 3),
-  createData(4, 4),
-  createData(5, 5),
-];
+const rows = [createData(1, 1), createData(2, 2), createData(3, 3), createData(4, 4), createData(5, 5)];
 
 function BasicTable() {
   return (

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from "react";
 import "./ContractPage.css";
 import { styled } from "@mui/material/styles";
 import List from "@mui/material/List";
@@ -10,10 +10,18 @@ import TextField from "@mui/material/TextField";
 import Chip from "@mui/material/Chip";
 import Grid from "@mui/material/Grid";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
-import { HexString, ZERO_HASH, useCryptraccContract, useCryptraccSign, useIdentitySetupCheck } from "../hooks/cryptracc";
+import {
+  HexString,
+  ZERO_HASH,
+  useCryptraccContract,
+  useCryptraccSign,
+  useIdentitySetupCheck,
+} from "../hooks/cryptracc";
 import { useParams } from "react-router-dom";
-import { useAccount } from 'wagmi';
-import { ThemeContext } from '@emotion/react';
+import { useAccount } from "wagmi";
+import { ThemeContext } from "@emotion/react";
+import { Box, ListItemButton } from "@mui/material";
+import { isHexString } from "ethers/lib/utils.js";
 
 const Demo = styled("div")(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
@@ -26,13 +34,14 @@ export default function ContractPage() {
   let { contractId } = useParams();
   const { address } = useAccount();
   const [validatedContractHash, setContractHash] = React.useState<HexString>(ZERO_HASH);
-  const { contractSignStatus } = useCryptraccContract(validatedContractHash);
-  const [signature, setSignature] = React.useState(""); // user-inputted signature
-  const [contractStatus, setContractStatus] = React.useState(false);
+  const { contractSignStatus: loadedStatus } = useCryptraccContract(validatedContractHash);
+  const [contractSignStatus, setContractSignStatus] = React.useState(loadedStatus);
+  const [addressConfirm, setAddressConfirm] = React.useState(""); // user-inputted confirmation
   const { data, isLoading, isSuccess, write } = useCryptraccSign(validatedContractHash);
+  const [signLoaded, setSignLoaded] = React.useState(false);
 
   React.useEffect(() => {
-    if (contractId && contractId.startsWith("0x") && contractId.length === 66) {
+    if (contractId && isHexString(contractId, 32)) {
       setContractHash(`0x${contractId.slice(2)}`);
     } else {
       // TODO: handle invalid contractId
@@ -40,57 +49,69 @@ export default function ContractPage() {
     }
   }, [contractId, setContractHash]);
 
+  useEffect(() => {
+    if (contractSignStatus === undefined || contractSignStatus.length === 0) {
+      setContractSignStatus(loadedStatus);
+    }
+  }, [contractSignStatus, loadedStatus]);
+
   // contractSignStatus contains (k|v={address: hash, signStatus: num})
-  console.log(contractSignStatus);
-  console.log(address);
+  // console.log(contractSignStatus);
+  // console.log(address);
+  // console.log(isSuccess);
 
   const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSignature(event.target.value);
+    setAddressConfirm(event.target.value);
   };
 
   const onClick = () => {
-    if (signature == address) {
+    if (addressConfirm === address) {
       write?.();
     }
   };
-  
-  React.useEffect(() => {
-    // check contract completion status
-    let complete = true;
-    contractSignStatus?.forEach(function (signer) {
-      if (signer.signStatus == "1") {
-        complete = false;
-      }
-    });
-    setContractStatus(complete);
-  }, [contractSignStatus]);
+
+  useEffect(() => {
+    if (isLoading && !signLoaded) {
+      setSignLoaded(true);
+    }
+    if (signLoaded && isSuccess && contractSignStatus?.find((signer) => signer.address === address)?.signStatus === 1) {
+      setAddressConfirm("");
+      setContractSignStatus(
+        contractSignStatus?.map((signer) => (signer.address === address ? { ...signer, signStatus: 2 } : signer))
+      );
+      setSignLoaded(false);
+    }
+  }, [address, contractSignStatus, isLoading, isSuccess, signLoaded]);
 
   return (
-    <div className="contractPage">
-      <Grid container justifyContent="flex-start">
+    <Box className="contractPage" sx={{ pt: 4 }}>
+      {/* <Grid container justifyContent="flex-start">
         <Grid item>
           <Button className="backButton" href="/lookup">
             <ArrowBackIosNewIcon />
             <b>BACK</b>
           </Button>
         </Grid>
-      </Grid>
+      </Grid> */}
 
       <h2>{contractId}</h2>
 
       <h3>
-        <u>STATUS</u>: {contractStatus ? "Complete" : "Incomplete"}
+        <u>STATUS</u>: {contractSignStatus?.every((signer) => signer.signStatus === 2) ? "Complete" : "Incomplete"}
       </h3>
 
       <TextField
-        label="Signature"
+        label="Enter your wallet address to confirm signing"
         variant="outlined"
-        value={signature}
+        value={addressConfirm}
         onChange={onChange}
         style={{ width: "400px" }}
       />
 
-      <Button variant="contained" component="label" sx={{
+      <Button
+        variant="contained"
+        component="label"
+        sx={{
           height: 50,
           width: 100,
           bgcolor: `#30B46C`,
@@ -108,17 +129,20 @@ export default function ContractPage() {
           {contractSignStatus?.map((signer, i) => (
             <div key={i}>
               <ListItem>
-                <ListItemText primary={signer.address as string} />
-                <Chip
-                  color={signer.signStatus=="2" ? "success" : "warning"}
-                  label={signer.signStatus=="2" ? <strong>SIGNED</strong> : <strong>NOT SIGNED</strong>}
-                />
+                <ListItemButton href={`/user/${signer.address}`}>
+                  <ListItemText primary={signer.address as string} />
+                </ListItemButton>
+                {signer.signStatus === 2 ? (
+                  <Chip color={"success"} label={<strong>SIGNED</strong>} />
+                ) : (
+                  <Chip color={"warning"} label={<strong>NOT SIGNED</strong>} />
+                )}
               </ListItem>
-              {i != contractSignStatus.length - 1 ? <Divider variant="inset" component="li" /> : null}
+              {i !== contractSignStatus.length - 1 ? <Divider variant="inset" component="li" /> : null}
             </div>
           ))}
         </List>
       </Demo>
-    </div>
+    </Box>
   );
 }

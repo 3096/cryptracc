@@ -8,6 +8,7 @@ import FileHashing from "../components/FileHashing";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
+import { isHexString } from "ethers/lib/utils.js";
 
 export default function VerificationPage() {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -19,7 +20,7 @@ export default function VerificationPage() {
   const [inputWalletAddress, setInputWalletAddress] = useState<string>(validatedWalletAddress);
   const { data: storedIdHash } = useIdentityHash(validatedWalletAddress);
 
-  const checkAddress = (address: string) => address.startsWith("0x") && address.length === 42 && /^([0-9a-fA-F]{2})+$/.test(address.slice(2));
+  const checkAddress = (address: string) => isHexString(address, 20);
 
   useEffect(() => {
     if (walletAddress && checkAddress(walletAddress)) {
@@ -34,15 +35,15 @@ export default function VerificationPage() {
     if (validatedWalletAddress === ZERO_ADDRESS) {
       setResult("Please enter a valid wallet address to verify");
     } else if (!storedIdHash) {
-      setResult("Unknown error")
+      setResult("Unknown error");
     } else if (storedIdHash === ZERO_HASH) {
-      setResult("This address is not verified on Cryptracc")
+      setResult("This address is not verified on Cryptracc");
     } else if (fileHash === ZERO_HASH) {
-      setResult("Please select a ID file to verify")
+      setResult("Please select a ID file to verify");
     } else if (fileHash === storedIdHash) {
-      setResult("Cryptracc successfully verified the ID of this address")
+      setResult("Cryptracc successfully verified the ID of this address");
     } else {
-      setResult("The selected ID does not match Cryptracc's record of this address")
+      setResult("The selected ID does not match Cryptracc's record of this address");
     }
   }, [validatedWalletAddress, storedIdHash, fileHash]);
 
@@ -82,30 +83,27 @@ export default function VerificationPage() {
   // function BackButton() {
   const back = () => {
     navigate(-1);
-  }
+  };
 
   return (
     <div>
       <Box>
-        <Typography variant="h6" sx={{ mb: 2, fontFamily: ['Montserrat', 'sans-serif'] }}>Enter a Wallet Address for verification</Typography>
-        <TextField
-          variant="outlined"
-          value={inputWalletAddress}
-          onChange={handleAddressInput}
-          style={{ width: 420 }}
-        />
+        <Typography variant="h6" sx={{ mb: 2, fontFamily: ["Montserrat", "sans-serif"] }}>
+          Enter a Wallet Address for verification
+        </Typography>
+        <TextField variant="outlined" value={inputWalletAddress} onChange={handleAddressInput} style={{ width: 420 }} />
       </Box>
       <FileHashing prompt="Select a ID file" setOutput={setFileHash} />
       {/* <input type="file" onChange={handleFileSelection} /> */}
       {/* <button onClick={handleFileUpload}>Hash File</button> */}
       {/* {fileHash !== ZERO_HASH ? <p>File hash: {fileHash}</p> : <></>} */}
 
-      <Typography variant="h4" sx={{ mb: 7 }}>{result}</Typography>
+      <Typography variant="h4" sx={{ mb: 7 }}>
+        {result}
+      </Typography>
       {/* <Typography variant="h1" align="center" style={{fontFamily: 'cursive', fontWeight: 'bold', fontSize: '5rem', color: '#333'}}>Hello World</Typography> */}
 
       {/* need a text intrea for  */}
-
-
 
       <Button
         variant="contained"
@@ -123,7 +121,5 @@ export default function VerificationPage() {
         <strong>Back</strong>
       </Button>
     </div>
-
-
   );
 }
